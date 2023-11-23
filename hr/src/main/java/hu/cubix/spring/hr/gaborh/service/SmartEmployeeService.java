@@ -2,6 +2,7 @@ package hu.cubix.spring.hr.gaborh.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,25 +31,28 @@ public class SmartEmployeeService implements EmployeeService {
 	@Autowired
 	private HrConfigurationProperties config;
 
+		
 	@Override
 	public int getPayRaisePercent(Employee employee) {
 		Smart smartConfig = config.getRaise().getSmart();
 
 		long passedMonth = employee.getStartDate().until(LocalDateTime.now(), ChronoUnit.MONTHS);
-		int[] payRaisePercent = new int[1];
+				
 		Map<Long, Integer> unsortedLimits = Map.of(smartConfig.getMonthsLimit1(),
 				smartConfig.getPercentForMonthsLimit1(), smartConfig.getMonthsLimit2(),
 				smartConfig.getPercentForMonthsLimit2(), smartConfig.getMonthsLimit3(),
 				smartConfig.getPercentForMonthsLimit3());
 		// Map<Long, Integer> sortedLimits = new TreeMap<>(unsortedLimits);
 
-		unsortedLimits.forEach((k, v) -> {
-			if (passedMonth >= k && payRaisePercent[0] < v) {
-				payRaisePercent[0] = v;
+		int payRaisePercent = 0;		
+		
+		for (Map.Entry<Long, Integer> entry : unsortedLimits.entrySet()) {
+			if (passedMonth >= entry.getKey() && payRaisePercent < entry.getValue()) {
+				payRaisePercent = entry.getValue();
 			}
-		});
-
-		return payRaisePercent[0];
+		}
+		
+		return payRaisePercent;
 	}
 
 }
