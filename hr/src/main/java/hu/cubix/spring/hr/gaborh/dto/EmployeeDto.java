@@ -1,19 +1,19 @@
-package hu.cubix.spring.hr.gaborh.model;
+package hu.cubix.spring.hr.gaborh.dto;
 
 import java.time.LocalDateTime;
 
-public class Employee {
-	
+public class EmployeeDto {
+
 	private Long id;
 	private String job;
 	private Integer salary;
 	private LocalDateTime startDate;
-	
-	public Employee() {
-		
+
+	public EmployeeDto() {
+
 	}
-	
-	public Employee(Long id, String job, Integer salary, LocalDateTime startDate) {
+
+	public EmployeeDto(Long id, String job, Integer salary, LocalDateTime startDate) {
 		super();
 		this.id = id;
 		this.job = job;
@@ -52,6 +52,5 @@ public class Employee {
 	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
 	}
-	
-	
+
 }
