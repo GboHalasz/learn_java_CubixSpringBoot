@@ -21,7 +21,7 @@ import hu.cubix.spring.hr.gaborh.dto.EmployeeDto;
 
 @RestController
 @RequestMapping("/api/employees")
-public class HrRestController {
+public class HrEmployeesRestController {
 
 	private Map<Long, EmployeeDto> employees = new HashMap<>();
 
@@ -39,15 +39,30 @@ public class HrRestController {
 	@GetMapping(params = "limit")
 	public List<EmployeeDto> listEmployeesWhoseSalaryIsMoreThan(@RequestParam long limit) {
 
-		List<EmployeeDto> result = new ArrayList<>();
+//		List<EmployeeDto> result = new ArrayList<>();
 
-		for (EmployeeDto employee : employees.values()) {
-			if (limit < employee.getSalary()) {
-				result.add(employee);
-			}
-		}
-		return result;
+//		for (EmployeeDto employee : employees.values()) {
+//			if (limit < employee.getSalary()) {
+//				result.add(employee);
+//			}
+//		}
+//		return result;
+
+//	1. megoldás külön metódus streammel
+
+		return employees.values().stream().filter(e -> limit < e.getSalary()).toList();
 	}
+
+// 2. megoldás egy metódusban opcionális paraméterrel
+
+//	@GetMapping
+//	public List<EmployeeDto> listAll(@RequestParam Optional<Integer> limit) {
+
+//	//vagy public List<EmployeeDto> listAll(@RequestParam(required = false) Integer limit) {		 //ebben az esetben limit == null vizsgálatot csinálunk nem isEmpty-t!!  Fontos, hogy a típus Integer, mert az == null nem értelmezhető a primitív int típuson!!       
+
+//		return limit.isEmpty() ? new ArrayList<>(employees.values())
+//				: employees.values().stream().filter(e -> e.getSalary() > limit).toList();
+//	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<EmployeeDto> findById(@PathVariable long id) {

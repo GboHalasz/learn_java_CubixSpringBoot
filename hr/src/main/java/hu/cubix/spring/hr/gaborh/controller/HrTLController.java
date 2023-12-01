@@ -15,16 +15,16 @@ public class HrTLController {
 
 	private List<Employee> employees = new ArrayList<>();
 
-	@GetMapping("/")
+	@GetMapping("/employees")
 	public String home(Map<String, Object> model) {
 		model.put("employees", employees);
 		model.put("newEmployee", new Employee());
 		return "index";
 	}
 
-	@PostMapping("/employee")
+	@PostMapping("/employees")
 	public String createEmployee(Employee employee) {
 		employees.add(employee);
-		return "redirect:/";
+		return "redirect:/employees";
 	}
 }

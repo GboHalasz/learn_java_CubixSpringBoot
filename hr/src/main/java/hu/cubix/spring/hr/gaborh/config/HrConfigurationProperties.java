@@ -1,5 +1,7 @@
 package hu.cubix.spring.hr.gaborh.config;
 
+import java.util.TreeMap;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,16 @@ public class HrConfigurationProperties {
 		}
 
 		public static class Smart {
+
+			private TreeMap<Long, Integer> limits;
+
+			public TreeMap<Long, Integer> getLimits() {
+				return limits;
+			}
+
+			public void setLimits(TreeMap<Long, Integer> limits) {
+				this.limits = limits;
+			}
 
 			private long monthsLimit1;
 
