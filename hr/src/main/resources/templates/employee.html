@@ -8,65 +8,78 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
-
-    <title>Hr application</title>
+    <title>Hr | Edit Employee</title>
   </head>
   <body>
     <div class="container">
-      <div class="row my-3 justify-content-center">
+      <div class="row my-3">
         <div class="col-10 col-md-6 col-lg-4">
           <form
             th:object="${newEmployee}"
             method="post"
-            th:action="@{/employees}"
+            th:action="@{'/employees/' + ${employee.id}}"
             class="my-3"
           >
             <fieldset>
-              <legend>Add new Employee</legend>
+              <legend>Edit Employee</legend>
               <div class="form-group mb-3">
-                <label for="employeeid" class="form-label">ID:</label>
+                <label
+                  for="employeeid"
+                  class="form-label"
+                  th:text="'Employee Id: ' + ${employee.id}"
+                  >ID:</label
+                >
+              </div>
+              <div class="form-group mb-3">
+                <label for="employeename" class="form-label">Edit name:</label>
                 <input
-                  th:field="*{id}"
                   required
-                  id="employeeid"
-                  type="number"
+                  th:name="name"
+                  id="employeename"
+                  type="text"
                   class="form-control"
-                  placeholder="identification number"
-                  aria-label="input to add the identification number"
+                  th:value="${employee.name}"
+                  aria-label="input to add the name"
                 />
               </div>
               <div class="form-group mb-3">
-                <label for="employeejob" class="form-label">Job:</label>
+                <label for="employeejob" class="form-label">Edit job:</label>
                 <input
-                  th:field="*{job}"
                   required
+                  th:name="job"
                   id="employeejob"
                   type="text"
                   class="form-control"
-                  placeholder="job"
+                  th:value="${employee.job}"
                   aria-label="input to add the job"
                 />
               </div>
-              <label for="employeesalary" class="form-label">Salary:</label>
+              <label for="employeesalary" class="form-label"
+                >Edit Salary:</label
+              >
               <div class="input-group mb-3">
                 <input
-                  th:field="*{salary}"
                   required
+                  th:name="salary"
                   id="employeesalary"
                   type="number"
                   class="form-control"
-                  placeholder="00000"
+                  th:value="${employee.salary}"
                   aria-label="input to add the salary"
                 />
                 <span class="input-group-text">$</span>
               </div>
               <div class="form-group mb-3">
-                <label for="employeestartdate" class="form-label"
-                  >Start date:</label
+                <label
+                  for="employeestartdate"
+                  class="form-label"
+                  th:text="'Edit start date (actual: '+ ${employee.startDate} + ')'"
+                  >Edit Start date:</label
                 >
                 <input
-                  th:field="*{startDate}"
                   required
+                  th:name="startDate"
+                  th:value="${employee.startDate}"
                   id="employeestartdate"
                   type="datetime-local"
                   class="form-control"
@@ -75,36 +88,10 @@
               </div>
             </fieldset>
             <button id="submit" type="submit" class="btn btn-primary">
-              Add
+              Submit
             </button>
           </form>
           <hr />
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-12">
-          <table class="table table-striped caption-top">
-            <caption>
-              Added employees
-            </caption>
-            <thead class="table-dark">
-              <tr>
-                <th>Id</th>
-                <th>Job</th>
-                <th>Salary</th>
-                <th>Start date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="employee : ${employees}">
-                <td th:text="${employee.id}">id</td>
-                <td th:text="${employee.job}">job</td>
-                <td th:text="${employee.salary}">salary</td>
-                <td th:text="${employee.startDate}">startDate</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@ class SalaryServiceTest {
 	void salaryServiceShouldSetsNewSalaryForTheGivenEmployeeUsingAnInjectedEmployeeServiceBean() {
 		//given
 		
-		Employee employee = new Employee(01L, "software developer", 100, LocalDateTime.of(1990, 01, 12, 8, 00));			
+		Employee employee = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.of(1990, 01, 12, 8, 00));			
 		SalaryService salaryService = new SalaryService(new MockEmployeeServiceClass());
 		//when
 		

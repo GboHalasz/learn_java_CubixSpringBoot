@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.cubix.spring.hr.gaborh.dto.EmployeeDto;
+import hu.cubix.spring.hr.gaborh.model.Employee;
+import hu.cubix.spring.hr.gaborh.service.EmployeeService;
 
 @RestController
 @RequestMapping("/api/employees")
 public class HrEmployeesRestController {
+
+	@Autowired
+	EmployeeService employeeService;
 
 	private Map<Long, EmployeeDto> employees = new HashMap<>();
 
@@ -94,5 +100,15 @@ public class HrEmployeesRestController {
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable long id) {
 		employees.remove(id);
+	}
+
+	@PostMapping("/raisepercent")
+	public ResponseEntity<Integer> getPayRaisePercentOf(@RequestBody Employee employee) {
+		if (employee == null)
+			return ResponseEntity.badRequest().build();
+
+		var result = employeeService.getPayRaisePercent(employee);
+
+		return ResponseEntity.ok(result);
 	}
 }

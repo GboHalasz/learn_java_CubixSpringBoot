@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HrConfigurationProperties {
 
-	private Raise raise;
+	private Raise raise = new Raise();
 
 	public Raise getRaise() {
 		return raise;
@@ -21,8 +21,18 @@ public class HrConfigurationProperties {
 
 	public static class Raise {
 
-		private Smart smart;
+		private Default def = new Default();
+		private Smart smart = new Smart();
+		
 
+		public Default getDef() {
+			return def;
+		}
+
+		public void setDef(Default def) {
+			this.def = def;
+		}
+		
 		public Smart getSmart() {
 			return smart;
 		}
@@ -31,6 +41,18 @@ public class HrConfigurationProperties {
 			this.smart = special;
 		}
 
+		public static class Default {
+			private int percent;
+
+			public int getPercent() {
+				return percent;
+			}
+
+			public void setPercent(int percent) {
+				this.percent = percent;
+			}
+		}
+		
 		public static class Smart {
 
 			private TreeMap<Long, Integer> limits;

@@ -20,14 +20,14 @@ class SmartEmployeeServiceTest {
 	void employeesShouldReceiveDifferentPercentRaisesDependingOnYearsTheySpentAtTheCompany() {
 		// given
 
-		Employee employee13 = new Employee(01L, "software developer", 100, LocalDateTime.now().minusYears(13));
-		Employee employee10 = new Employee(01L, "software developer", 100, LocalDateTime.now().minusYears(10));
-		Employee employee7 = new Employee(01L, "software developer", 100, LocalDateTime.now().minusYears(7));
-		Employee employee5 = new Employee(01L, "software developer", 100, LocalDateTime.now().minusYears(5));
-		Employee employee3 = new Employee(01L, "software developer", 100, LocalDateTime.now().minusYears(3));
-		Employee employee2_5 = new Employee(01L, "software developer", 100, LocalDateTime.now().minusMonths(30));
-		Employee employee2 = new Employee(01L, "software developer", 100, LocalDateTime.now().minusYears(2));
-		Employee employee1 = new Employee(01L, "software developer", 100, LocalDateTime.now().minusYears(1));
+		Employee employee13 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(13));
+		Employee employee10 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(10));
+		Employee employee7 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(7));
+		Employee employee5 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(5));
+		Employee employee3 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(3));
+		Employee employee2_5 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusMonths(30));
+		Employee employee2 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(2));
+		Employee employee1 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(1));
 
 		// when
 		// SalaryService salaryService = new SalaryService(new SmartEmployeeService());

@@ -1,12 +1,12 @@
-spring:
-  profiles: 
-    active: smart
-hr:
-  raise:
-    smart:
-      monthsLimit1: 120
-      percentForMonthsLimit1: 10
-      monthsLimit2: 60
-      percentForMonthsLimit2: 5
-      monthsLimit3: 30
-      percentForMonthsLimit3: 2
+#spring:
+#  profiles: 
+#    active: smart
+#hr:
+#  raise:
+#    smart:
+#      monthsLimit1: 120
+#      percentForMonthsLimit1: 10
+#      monthsLimit2: 60
+#      percentForMonthsLimit2: 5
+#      monthsLimit3: 30
+#      percentForMonthsLimit3: 2
