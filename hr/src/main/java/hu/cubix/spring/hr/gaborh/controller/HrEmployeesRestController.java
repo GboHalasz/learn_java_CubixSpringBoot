@@ -27,14 +27,14 @@ import hu.cubix.spring.hr.gaborh.service.EmployeeService;
 public class HrEmployeesRestController {
 
 	@Autowired
-	EmployeeService employeeService;
+	private EmployeeService employeeService;
 
 	private Map<Long, EmployeeDto> employees = new HashMap<>();
 
 	{
-		employees.put(1L, new EmployeeDto(1L, "developer", 10000, LocalDateTime.of(1990, 01, 12, 8, 00)));
-		employees.put(2L, new EmployeeDto(2L, "developer", 20000, LocalDateTime.of(1990, 01, 12, 8, 00)));
-		employees.put(3L, new EmployeeDto(3L, "developer", 30000, LocalDateTime.of(1990, 01, 12, 8, 00)));
+		employees.put(1L, new EmployeeDto(1L, "Pál Dénes", "developer", 10000, LocalDateTime.of(1990, 01, 12, 8, 00)));
+		employees.put(2L, new EmployeeDto(2L, "Jane Doe", "developer", 20000, LocalDateTime.of(1990, 01, 12, 8, 00)));
+		employees.put(3L, new EmployeeDto(3L, "Kiss Elemér", "developer", 30000, LocalDateTime.of(1990, 01, 12, 8, 00)));
 	}
 
 	@GetMapping
@@ -103,12 +103,8 @@ public class HrEmployeesRestController {
 	}
 
 	@PostMapping("/raisepercent")
-	public ResponseEntity<Integer> getPayRaisePercentOf(@RequestBody Employee employee) {
-		if (employee == null)
-			return ResponseEntity.badRequest().build();
-
-		var result = employeeService.getPayRaisePercent(employee);
-
-		return ResponseEntity.ok(result);
+	public int getPayRaisePercentOf(@RequestBody Employee employee) {
+		
+		return employeeService.getPayRaisePercent(employee);
 	}
 }

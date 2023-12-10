@@ -3,34 +3,35 @@ package hu.cubix.spring.hr.gaborh.dto;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
 public class CompanyDto {
 
-	@JsonProperty("id")
-	private String id;
-	@JsonProperty("registrationNumber")
+	@JsonView(Views.BaseData.class)
+	private Long id;
+	@JsonView(Views.BaseData.class)
 	private Long registrationNumber;
-	@JsonProperty("name")
+	@JsonView(Views.BaseData.class)
 	private String name;
-	@JsonProperty("address")
+	@JsonView(Views.BaseData.class)
 	private String address;
-	@JsonProperty("workers")
+	
 	private Map<Long, EmployeeDto> workers = new HashMap<>();
 
-	public CompanyDto(String id, Long registrationNumber, String name, String address) {
+	public CompanyDto(Long id, Long registrationNumber, String name, String address, Map<Long, EmployeeDto> workers) {
 		super();
 		this.id = id;
 		this.registrationNumber = registrationNumber;
 		this.name = name;
 		this.address = address;
+		this.workers = workers;
 	}
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

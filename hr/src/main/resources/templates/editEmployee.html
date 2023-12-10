@@ -14,10 +14,17 @@
     <div class="container">
       <div class="row my-3">
         <div class="col-10 col-md-6 col-lg-4">
-          <form
+          <!-- <form
             th:object="${newEmployee}"
             method="post"
             th:action="@{'/employees/' + ${employee.id}}"
+            class="my-3"
+          > -->
+
+          <form
+            th:action="@{/updateEmployee}"
+            method="post"
+            th:object="${employee}"           
             class="my-3"
           >
             <fieldset>
@@ -26,19 +33,22 @@
                 <label
                   for="employeeid"
                   class="form-label"
-                  th:text="'Employee Id: ' + ${employee.id}"
+                  th:text="*{id}"
                   >ID:</label
                 >
+                <input                  
+                  type="hidden"
+                  th:field="*{id}"                  
+                />
               </div>
               <div class="form-group mb-3">
                 <label for="employeename" class="form-label">Edit name:</label>
                 <input
-                  required
-                  th:name="name"
+                  required     
+                  th:field="*{name}"             
                   id="employeename"
                   type="text"
                   class="form-control"
-                  th:value="${employee.name}"
                   aria-label="input to add the name"
                 />
               </div>
@@ -46,11 +56,10 @@
                 <label for="employeejob" class="form-label">Edit job:</label>
                 <input
                   required
-                  th:name="job"
+                  th:field="*{job}"
                   id="employeejob"
                   type="text"
-                  class="form-control"
-                  th:value="${employee.job}"
+                  class="form-control"                  
                   aria-label="input to add the job"
                 />
               </div>
@@ -60,11 +69,10 @@
               <div class="input-group mb-3">
                 <input
                   required
-                  th:name="salary"
+                  th:field="*{salary}"
                   id="employeesalary"
                   type="number"
                   class="form-control"
-                  th:value="${employee.salary}"
                   aria-label="input to add the salary"
                 />
                 <span class="input-group-text">$</span>
@@ -72,14 +80,13 @@
               <div class="form-group mb-3">
                 <label
                   for="employeestartdate"
-                  class="form-label"
-                  th:text="'Edit start date (actual: '+ ${employee.startDate} + ')'"
+                  class="form-label"                  
                   >Edit Start date:</label
                 >
                 <input
-                  required
+                  required                  
                   th:name="startDate"
-                  th:value="${employee.startDate}"
+                  th:value="*{startDate}"
                   id="employeestartdate"
                   type="datetime-local"
                   class="form-control"
@@ -88,7 +95,7 @@
               </div>
             </fieldset>
             <button id="submit" type="submit" class="btn btn-primary">
-              Submit
+              Save
             </button>
           </form>
           <hr />

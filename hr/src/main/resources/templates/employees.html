@@ -71,13 +71,16 @@
 					<tbody>
 						<tr th:each="employee : ${employees}">
 							<td th:text="${employee.key}">id</td>
-							<td><a th:href="@{'./employees/' + ${employee.value.id}}"
-									th:text="${employee.value.name}">Name:</a></td>
+							<!-- <td><a th:href="@{'./employees/' + ${employee.value.id}}"
+									th:text="${employee.value.name}">Name:</a></td> -->
+							<td><a th:href="@{/employees/{id}(id = ${employee.value.id})}"
+									th:text="${employee.value.name}">Name:</a></td>		
 							<td th:text="${employee.value.job}">job</td>
 							<td th:text="${employee.value.salary}">salary</td>
 							<td th:text="${employee.value.startDate}">startDate</td>
 							<td>
-								<a th:href="@{'/employees/delete/' + ${employee.key}}" class="btn btn-danger btn-sm">Delete</a>
+								<!-- <a th:href="@{'/employees/delete/' + ${employee.key}}" class="btn btn-danger btn-sm">Delete</a> -->
+								<a th:href="@{/employees/delete/{id}(id = ${employee.key})}" class="btn btn-danger btn-sm">Delete</a>
 							</td>
 						</tr>
 					</tbody>

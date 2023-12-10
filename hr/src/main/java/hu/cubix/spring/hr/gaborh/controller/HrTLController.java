@@ -30,25 +30,28 @@ public class HrTLController {
 
 	@GetMapping("/employees/{id}")
 	public String editEmployee(Map<String, Object> model, @PathVariable long id) {
-		model.put("employee", employees.get(id));
-		model.put("newEmployee", new Employee());
-		return "employee";
+		model.put("employee", employees.get(id));		
+//		model.put("employee", allEmployees.stream().filter(e -> e.getEmployeeId() == id).findFirst().get());		//az oktatói megoldásban Lista van, abból szűrjük ki
+		return "editEmployee";
 	}
 
-	@PostMapping("/employees/{id}")
-	public String updateEmployee(@PathVariable long id, Employee employee) {
-		employee.setId(id);
-		if (!employees.containsKey(id))
-			return "redirect:/error";
-
-		employees.put(id, employee);
+	@PostMapping("/updateEmployee")
+	public String updateEmployee(Employee employee) {		
+		employees.put(employee.getId(), employee);
+//		for(int i=0; i< allEmployees.size(); i++) {											//ha allEmployees listánk lenne
+//			if(allEmployees.get(i).getEmployeeId() == employee.getEmployeeId()) {
+//				allEmployees.set(i, employee);
+//				break;
+//			}
 		return "redirect:/employees";
 	}
 
 	@GetMapping("/employees/delete/{id}")
 	public String deleteEmployee(@PathVariable long id) {
 		employees.remove(id);
-		return "redirect:/employees";
+//		allEmployees.removeIf(e -> e.getEmployeeId() == id );			//az oktatói megoldásban allEmployees Lista van, amiből id alapján a removeIf metódussal legegyszerűbb törölni
+		return "redirect:/employees";									// a / kell, hogy ne relatíven irányítson át
+		
 	}
 
 }
