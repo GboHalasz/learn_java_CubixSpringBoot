@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import hu.cubix.spring.hr.gaborh.model.Employee;
 
 @Service
-public class DefaultEmployeeService implements EmployeeService {
+public class DefaultEmployeeService extends EmployeeSuperService {
 
 	@Override
 	public int getPayRaisePercent(Employee employee) {

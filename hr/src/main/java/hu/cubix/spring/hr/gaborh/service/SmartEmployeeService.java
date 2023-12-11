@@ -13,7 +13,7 @@ import hu.cubix.spring.hr.gaborh.config.HrConfigurationProperties.Raise.Smart;
 import hu.cubix.spring.hr.gaborh.model.Employee;
 
 @Service
-public class SmartEmployeeService implements EmployeeService {
+public class SmartEmployeeService extends EmployeeSuperService {
 
 //	@Value("${hr.raise.smart.monthsLimit1}")
 //	private long monthsLimit1;
