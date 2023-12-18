@@ -27,6 +27,7 @@ public class HrEmployeesRestControllerIT {
 	private List<EmployeeDto> employeesBefore;
 	private long newId = 100L;
 	private EmployeeDto newEmployee;
+	private EmployeeDto updatedEmployee;
 
 	@BeforeEach
 	void setUp() {
@@ -34,8 +35,10 @@ public class HrEmployeesRestControllerIT {
 		if (employeesBefore.size() > 0) {
 			newId = employeesBefore.get((employeesBefore.size() - 1)).getId() + 1;
 		}
-		
-		newEmployee = new EmployeeDto(newId, "test name", "testjob", 10000,	LocalDateTime.of(1990, 01, 12, 8, 00));
+
+		newEmployee = new EmployeeDto(newId, "test name", "testjob", 10000, LocalDateTime.of(1990, 01, 12, 8, 00));
+		updatedEmployee = new EmployeeDto(newId, "test name2", "testjob2", 20000,
+				LocalDateTime.of(2000, 01, 12, 8, 00));
 	}
 
 	@Test
@@ -51,50 +54,174 @@ public class HrEmployeesRestControllerIT {
 
 	@Test
 	void testThatCreatedEmployeeWithoutNameIsNotListed() {
+		newEmployee.setName(null);
 
-		EmployeeDto incorrectEmployee = new EmployeeDto(newId, null, "testjob", 10000, LocalDateTime.of(1990, 01, 12, 8, 00));
-
-		createInvalid(incorrectEmployee);
+		createInvalid(newEmployee);
 		List<EmployeeDto> employeesAfter = getAllEmployees();
 
+		assertionsAfterCreateInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatCreatedEmployeeWithEmptyStringNameIsNotListed() {
+		newEmployee.setName("");
+
+		createInvalid(newEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterCreateInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatCreatedEmployeeWithoutJobIsNotListed() {
+		newEmployee.setJob(null);
+
+		createInvalid(newEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterCreateInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatCreatedEmployeeWithEmptyStringJobIsNotListed() {
+		newEmployee.setJob("");
+
+		createInvalid(newEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterCreateInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatCreatedEmployeeWith0SalaryIsNotListed() {
+		newEmployee.setSalary(0);
+
+		createInvalid(newEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterCreateInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatCreatedEmployeeWithNegativeSalaryIsNotListed() {
+		newEmployee.setSalary(-10000);
+
+		createInvalid(newEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterCreateInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatCreatedEmployeeWithFutureStartDateIsNotListed() {
+		newEmployee.setStartDate(LocalDateTime.now().plusDays(1));
+
+		createInvalid(newEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterCreateInvalidEmployee(employeesAfter);
+	}
+
+// Updates .........................................................................	
+
+	@Test
+	void testThatCorrectlyUpdatedEmployeeIsListed() {
+
+		createValid(newEmployee);
+		updateEmployeeWithValid(updatedEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
+		assertThat(employeesAfter.subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyElementsOf(employeesBefore);
+		assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().isEqualTo(updatedEmployee);
+	}
+
+	@Test
+	void testThatUpdateEmployeeWithoutNameIsNotListed() {
+		updatedEmployee.setName(null);
+
+		createValid(newEmployee);
+		updateEmployeeWithInvalid(updatedEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterUpdateWithInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatUpdateEmployeeWithEmptyStringNameIsNotListed() {
+		updatedEmployee.setName("");
+
+		createValid(newEmployee);
+		updateEmployeeWithInvalid(updatedEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterUpdateWithInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatUpdateEmployeeWithoutJobIsNotListed() {
+		updatedEmployee.setJob(null);
+
+		createValid(newEmployee);
+		updateEmployeeWithInvalid(updatedEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterUpdateWithInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatUpdateEmployeeWithEmptyStringJobIsNotListed() {
+		updatedEmployee.setJob("");
+
+		createValid(newEmployee);
+		updateEmployeeWithInvalid(updatedEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterUpdateWithInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatUpdateEmployeeWith0SalaryIsNotListed() {
+		updatedEmployee.setSalary(0);
+
+		createValid(newEmployee);
+		updateEmployeeWithInvalid(updatedEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterUpdateWithInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatUpdateEmployeeWithNegativeSalaryIsNotListed() {
+		updatedEmployee.setSalary(-1);
+
+		createValid(newEmployee);
+		updateEmployeeWithInvalid(updatedEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterUpdateWithInvalidEmployee(employeesAfter);
+	}
+
+	@Test
+	void testThatUpdateEmployeeWithFutureStartDateIsNotListed() {
+		updatedEmployee.setStartDate(LocalDateTime.now().plusDays(1));
+
+		createValid(newEmployee);
+		updateEmployeeWithInvalid(updatedEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertionsAfterUpdateWithInvalidEmployee(employeesAfter);
+	}
+
+	private void assertionsAfterCreateInvalidEmployee(List<EmployeeDto> employeesAfter) {
 		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size());
 		assertThat(employeesAfter).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyElementsOf(employeesBefore);
 	}
 
-	@Test
-	void testThatCorrectlyUpdatedEmployeeIsListed() {
-		
-		createValid(newEmployee);
-
-		EmployeeDto updatedEmployee = new EmployeeDto(newId, "test name2", "testjob2", 20000,
-				LocalDateTime.of(2000, 01, 12, 8, 00));
-
-		updateEmployeeWithValid(updatedEmployee);
-
-		List<EmployeeDto> employeesAfter = getAllEmployees();
-
+	private void assertionsAfterUpdateWithInvalidEmployee(List<EmployeeDto> employeesAfter) {
 		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
-
-		assertThat(employeesAfter.subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator()
-				.containsExactlyElementsOf(employeesBefore);
-		assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().isEqualTo(updatedEmployee);
-	}
-	
-	@Test
-	void testThatUpdateEmployeeWithoutNameIsNotListed() {
-
-		createValid(newEmployee);
-
-		EmployeeDto updatedEmployee = new EmployeeDto(newId, null, "testjob2", 20000,
-				LocalDateTime.of(2000, 01, 12, 8, 00));
-
-		updateEmployeeWithInvalid(updatedEmployee);
-
-		List<EmployeeDto> employeesAfter = getAllEmployees();
-
-		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
-
 		assertThat(employeesAfter.subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyElementsOf(employeesBefore);
 		assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().isEqualTo(newEmployee);
