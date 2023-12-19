@@ -1,5 +1,6 @@
 package hu.cubix.spring.hr.gaborh.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,5 +109,24 @@ public class HrEmployeesRestController {
 	public int getPayRaisePercentOf(@RequestBody Employee employee) {
 
 		return employeeService.getPayRaisePercent(employee);
+	}
+
+	@GetMapping(params = "job")
+	public List<EmployeeDto> listEmployeesWhoseJobIs(@RequestParam String job) {
+		List<Employee> employeesWithGivenJob = employeeService.findByJob(job);
+		return employeeMapper.employeesToDtos(employeesWithGivenJob);
+	}
+
+	@GetMapping(params = "prefix")
+	public List<EmployeeDto> listEmployeesWithGiven(@RequestParam String prefix) {
+		List<Employee> employeesWithGivenPrefix = employeeService.findByNamePrefix(prefix);
+		return employeeMapper.employeesToDtos(employeesWithGivenPrefix);
+	}
+
+	@GetMapping(params = { "startdate", "enddate" })
+	public List<EmployeeDto> findByStartDateBetween(@RequestParam LocalDateTime startdate,
+			@RequestParam LocalDateTime enddate) {
+		List<Employee> employeesStartedBetween = employeeService.findByStartDateBetween(startdate, enddate);
+		return employeeMapper.employeesToDtos(employeesStartedBetween);
 	}
 }

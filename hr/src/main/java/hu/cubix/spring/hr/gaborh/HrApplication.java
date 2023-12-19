@@ -26,10 +26,10 @@ public class HrApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		List<Employee> employees = Arrays.asList(
-				new Employee(01L, "Jane Doe", "software developer", 10000, LocalDateTime.of(1990, 01, 12, 8, 00)),
-				new Employee(02L, "Jack Doe", "software developer", 10000, LocalDateTime.of(2017, 01, 12, 8, 00)),
-				new Employee(03L, "Adam Doe", "software developer", 10000, LocalDateTime.of(2021, 01, 12, 8, 00)),
-				new Employee(04L, "Lil Doe", "software developer", 10000, LocalDateTime.of(2022, 01, 12, 8, 00)));
+				new Employee(01L, "Jane Doe", "software developer", 10000, LocalDateTime.of(1990, 01, 12, 8, 00), null),
+				new Employee(02L, "Jack Doe", "software developer", 10000, LocalDateTime.of(2017, 01, 12, 8, 00), null),
+				new Employee(03L, "Adam Doe", "software developer", 10000, LocalDateTime.of(2021, 01, 12, 8, 00), null),
+				new Employee(04L, "Lil Doe", "software developer", 10000, LocalDateTime.of(2022, 01, 12, 8, 00), null));
 
 		employees.stream().forEach(employee -> {
 			salaryService.setNewSalaryForAn(employee);

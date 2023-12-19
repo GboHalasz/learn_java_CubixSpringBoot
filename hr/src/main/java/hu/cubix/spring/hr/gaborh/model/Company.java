@@ -1,40 +1,56 @@
 package hu.cubix.spring.hr.gaborh.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
+@Entity
 public class Company {
 
-
-	
-	private Long id;
-	private Long registrationNumber;
+	@Id
+	@GeneratedValue
+	private long id;
+	private long registrationNumber;
 	private String name;
 	private String address;
-	private Map<Long, Employee> workers = new HashMap<>();
 
-	public Company(Long id, Long registrationNumber, String name, String address, Map<Long, Employee> workers) {
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "company", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<Employee> employees;
+
+	public Company() {
+
+	}
+
+	public Company(long id, long registrationNumber, String name, String address, List<Employee> employees) {
 		super();
 		this.id = id;
 		this.registrationNumber = registrationNumber;
 		this.name = name;
 		this.address = address;
-		this.workers = workers;
+		this.employees = employees;
 	}
 
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
-	public Long getRegistrationNumber() {
+	public long getRegistrationNumber() {
 		return registrationNumber;
 	}
 
-	public void setRegistrationNumber(Long registrationNumber) {
+	public void setRegistrationNumber(long registrationNumber) {
 		this.registrationNumber = registrationNumber;
 	}
 
@@ -54,12 +70,12 @@ public class Company {
 		this.address = address;
 	}
 
-	public Map<Long, Employee> getWorkers() {
-		return workers;
+	public List<Employee> getEmployees() {
+		return employees;
 	}
 
-	public void setWorkers(Map<Long, Employee> workers) {
-		this.workers = workers;
+	public void setEmployees(List<Employee> employees) {
+		this.employees = employees;
 	}
 
 }

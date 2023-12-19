@@ -1,7 +1,6 @@
 package hu.cubix.spring.hr.gaborh.dto;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -15,16 +14,16 @@ public class CompanyDto {
 	private String name;
 	@JsonView(Views.BaseData.class)
 	private String address;
-	
-	private Map<Long, EmployeeDto> workers = new HashMap<>();
 
-	public CompanyDto(Long id, Long registrationNumber, String name, String address, Map<Long, EmployeeDto> workers) {
+	private List<EmployeeDto> employees;
+
+	public CompanyDto(Long id, Long registrationNumber, String name, String address, List<EmployeeDto> employees) {
 		super();
 		this.id = id;
 		this.registrationNumber = registrationNumber;
 		this.name = name;
 		this.address = address;
-		this.workers = workers;
+		this.employees = employees;
 	}
 
 	public Long getId() {
@@ -59,12 +58,12 @@ public class CompanyDto {
 		this.address = address;
 	}
 
-	public Map<Long, EmployeeDto> getWorkers() {
-		return workers;
+	public List<EmployeeDto> getEmployees() {
+		return employees;
 	}
 
-	public void setWorkers(Map<Long, EmployeeDto> workers) {
-		this.workers = workers;
+	public void setEmployees(List<EmployeeDto> employees) {
+		this.employees = employees;
 	}
 
 }

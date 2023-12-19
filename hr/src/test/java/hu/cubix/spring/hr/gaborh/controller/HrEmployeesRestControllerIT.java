@@ -36,9 +36,9 @@ public class HrEmployeesRestControllerIT {
 			newId = employeesBefore.get((employeesBefore.size() - 1)).getId() + 1;
 		}
 
-		newEmployee = new EmployeeDto(newId, "test name", "testjob", 10000, LocalDateTime.of(1990, 01, 12, 8, 00));
+		newEmployee = new EmployeeDto(newId, "test name", "testjob", 10000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
 		updatedEmployee = new EmployeeDto(newId, "test name2", "testjob2", 20000,
-				LocalDateTime.of(2000, 01, 12, 8, 00));
+				LocalDateTime.of(2000, 01, 12, 8, 00), null);
 	}
 
 	@Test

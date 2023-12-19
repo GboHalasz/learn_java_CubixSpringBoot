@@ -13,7 +13,7 @@ class EmployeeTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		employeeUnderTest = new Employee(01L, "Jane Doe", "software developer", 20000, LocalDateTime.of(1990, 01, 12, 8, 00));
+		employeeUnderTest = new Employee(01L, "Jane Doe", "software developer", 20000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
 	}
 
 	@Test	

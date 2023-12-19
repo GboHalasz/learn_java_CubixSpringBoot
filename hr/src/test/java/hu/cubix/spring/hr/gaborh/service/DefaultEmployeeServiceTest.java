@@ -13,7 +13,7 @@ class DefaultEmployeeServiceTest {
 	@Test
 	void anEmployeeShouldGetFivePercentRaise() {
 		// given
-		Employee employee = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.of(1990, 01, 12, 8, 00));
+		Employee employee = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.of(1990, 01, 12, 8, 00), null);
 		
 		
 		// when

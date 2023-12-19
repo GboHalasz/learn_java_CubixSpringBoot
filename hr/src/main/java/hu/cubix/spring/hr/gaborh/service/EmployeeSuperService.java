@@ -1,56 +1,64 @@
 package hu.cubix.spring.hr.gaborh.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.cubix.spring.hr.gaborh.model.Employee;
+import hu.cubix.spring.hr.gaborh.repository.EmployeeRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public abstract class EmployeeSuperService implements EmployeeService {
 
-	private Map<Long, Employee> employees = new HashMap<>();
+	@Autowired
+	private EmployeeRepository employeeRepository;
 
-	{
-		employees.put(1L, new Employee(1L, "Pál Dénes", "developer", 10000, LocalDateTime.of(1990, 01, 12, 8, 00)));
-		employees.put(2L, new Employee(2L, "Jane Doe", "developer", 20000, LocalDateTime.of(1990, 01, 12, 8, 00)));
-		employees.put(3L, new Employee(3L, "Kiss Elemér", "developer", 30000, LocalDateTime.of(1990, 01, 12, 8, 00)));
-	}
-
+	@Transactional
 	public Employee create(Employee employee) {
 		if (findById(employee.getId()) != null) {
 			return null;
 		}
 		return save(employee);
 	}
-	
-	public Employee update(Employee employee) {                                                                                                                                                                            
+
+	@Transactional
+	public Employee update(Employee employee) {
 		if (findById(employee.getId()) == null) {
 			return null;
 		}
 		return save(employee);
-	 }
-
+	}
 
 	public Employee save(Employee employee) {
-		employees.put(employee.getId(), employee);
-		return employee;
+		return employeeRepository.save(employee);
 	}
 
 	public List<Employee> findAll() {
-		return new ArrayList<>(employees.values());
+		return employeeRepository.findAll();
 	}
 
 	public Employee findById(long id) {
-		return employees.get(id);
+		return employeeRepository.findById(id).orElse(null);
 	}
 
+	@Transactional
 	public void delete(long id) {
-		employees.remove(id);
+		employeeRepository.deleteById(id);
+	}
+
+	public List<Employee> findByJob(String job) {
+		return employeeRepository.findByJob(job);
+	}
+
+	public List<Employee> findByNamePrefix(String searchPrefix) {
+		return employeeRepository.findByNameStartingWithSearchPrefixIgnoreCase(searchPrefix);
+	}
+	
+	public List<Employee> findByStartDateBetween(LocalDateTime start, LocalDateTime end) {
+		return employeeRepository.findByStartDateBetween(start, end);
 	}
 
 }
