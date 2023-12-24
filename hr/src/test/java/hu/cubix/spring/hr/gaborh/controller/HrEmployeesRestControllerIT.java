@@ -36,9 +36,9 @@ public class HrEmployeesRestControllerIT {
 			newId = employeesBefore.get((employeesBefore.size() - 1)).getId() + 1;
 		}
 
-		newEmployee = new EmployeeDto(newId, "test name", "testjob", 10000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
+		newEmployee = new EmployeeDto(newId, "test name", "testjob", 10000, LocalDateTime.of(1990, 01, 12, 8, 00));
 		updatedEmployee = new EmployeeDto(newId, "test name2", "testjob2", 20000,
-				LocalDateTime.of(2000, 01, 12, 8, 00), null);
+				LocalDateTime.of(2000, 01, 12, 8, 00));
 	}
 
 	@Test
@@ -246,10 +246,20 @@ public class HrEmployeesRestControllerIT {
 	}
 
 	private List<EmployeeDto> getAllEmployees() {
-		List<EmployeeDto> allEmployees = webTestClient.get().uri(API_EMPLOYEES).exchange().expectStatus().isOk()
-				.expectBodyList(EmployeeDto.class).returnResult().getResponseBody();
+		List<EmployeeDto> allEmployees = webTestClient
+				.get()
+				.uri(API_EMPLOYEES)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBodyList(EmployeeDto.class).
+				returnResult()
+				.getResponseBody();
 
-		Collections.sort(allEmployees, Comparator.comparing(e -> e.getId()));
+		Collections.sort(allEmployees, Comparator.comparing(e -> e.getId()));  
+		
+//lehet így is: 
+//		Collections.sort(allEmployees, Comparator.comparing(EmployeeDto::getId));
 
 		return allEmployees;
 	}

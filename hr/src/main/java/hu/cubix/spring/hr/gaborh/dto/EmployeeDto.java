@@ -2,7 +2,6 @@ package hu.cubix.spring.hr.gaborh.dto;
 
 import java.time.LocalDateTime;
 
-import hu.cubix.spring.hr.gaborh.model.Company;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Positive;
@@ -18,21 +17,19 @@ public class EmployeeDto {
 	private Integer salary;
 	@Past
 	private LocalDateTime startDate;
-	private Company company;
 
 	public EmployeeDto() {
 
 	}
 
 	public EmployeeDto(long id, @NotEmpty String name, @NotEmpty String job, @Positive Integer salary,
-			@Past LocalDateTime startDate, Company company) {
+			@Past LocalDateTime startDate) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.job = job;
 		this.salary = salary;
 		this.startDate = startDate;
-		this.company = company;
 	}
 
 	public String getJob() {
@@ -73,14 +70,6 @@ public class EmployeeDto {
 
 	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
-	}
-
-	public Company getCompany() {
-		return company;
-	}
-
-	public void setCompany(Company company) {
-		this.company = company;
 	}
 
 }

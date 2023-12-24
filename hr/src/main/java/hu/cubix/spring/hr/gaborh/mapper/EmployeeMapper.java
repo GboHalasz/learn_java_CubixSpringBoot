@@ -10,10 +10,13 @@ import hu.cubix.spring.hr.gaborh.model.Employee;
 @Mapper(componentModel = "spring")
 public interface EmployeeMapper {
 
-	public EmployeeDto employeeToDto(Employee employee);
+	EmployeeDto employeeToDto(Employee employee);
 
-	public List<EmployeeDto> employeesToDtos(List<Employee> employees);
+	Employee dtoToEmployee(EmployeeDto employeeDto);
+	
+	List<EmployeeDto> employeesToDtos(List<Employee> employees);
+	
+	List<Employee> DtosToEmployees(List<EmployeeDto> employees);
 
-	public Employee dtoToEmployee(EmployeeDto employeeDto);
 
 }

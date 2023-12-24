@@ -10,7 +10,7 @@ import hu.cubix.spring.hr.gaborh.model.Employee;
 
 class SalaryServiceTest {
 	
-	class MockEmployeeServiceClass implements EmployeeService{
+	class MockEmployeeServiceClass extends EmployeeSuperService{
 
 		@Override
 		public int getPayRaisePercent(Employee employee) {			

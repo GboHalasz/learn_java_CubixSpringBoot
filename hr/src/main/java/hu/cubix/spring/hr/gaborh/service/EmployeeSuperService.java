@@ -2,13 +2,13 @@ package hu.cubix.spring.hr.gaborh.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.cubix.spring.hr.gaborh.model.Employee;
 import hu.cubix.spring.hr.gaborh.repository.EmployeeRepository;
-import jakarta.transaction.Transactional;
 
 @Service
 public abstract class EmployeeSuperService implements EmployeeService {
@@ -16,47 +16,50 @@ public abstract class EmployeeSuperService implements EmployeeService {
 	@Autowired
 	private EmployeeRepository employeeRepository;
 
-	@Transactional
+	@Override
 	public Employee create(Employee employee) {
-		if (findById(employee.getId()) != null) {
-			return null;
-		}
-		return save(employee);
-	}
-
-	@Transactional
-	public Employee update(Employee employee) {
-		if (findById(employee.getId()) == null) {
-			return null;
-		}
-		return save(employee);
-	}
-
-	public Employee save(Employee employee) {
 		return employeeRepository.save(employee);
 	}
 
+	@Override
+	public Employee update(Employee employee) {
+		if (!employeeRepository.existsById(employee.getId()))
+			return null;
+
+		return employeeRepository.save(employee);
+	}
+
+	@Override
 	public List<Employee> findAll() {
 		return employeeRepository.findAll();
 	}
 
-	public Employee findById(long id) {
-		return employeeRepository.findById(id).orElse(null);
+	@Override
+	public Optional<Employee> findById(long id) {
+		return employeeRepository.findById(id);
 	}
 
-	@Transactional
+	@Override
 	public void delete(long id) {
 		employeeRepository.deleteById(id);
 	}
+	
+	@Override
+	public List<Employee> findBySalaryGreaterThan(int limitSalary) {
+		return employeeRepository.findBySalaryGreaterThan(limitSalary);
+	}
 
+	@Override
 	public List<Employee> findByJob(String job) {
 		return employeeRepository.findByJob(job);
 	}
 
+	@Override
 	public List<Employee> findByNamePrefix(String searchPrefix) {
-		return employeeRepository.findByNameStartingWithSearchPrefixIgnoreCase(searchPrefix);
+		return employeeRepository.findByNameStartingWithIgnoreCase(searchPrefix);
 	}
-	
+
+	@Override
 	public List<Employee> findByStartDateBetween(LocalDateTime start, LocalDateTime end) {
 		return employeeRepository.findByStartDateBetween(start, end);
 	}

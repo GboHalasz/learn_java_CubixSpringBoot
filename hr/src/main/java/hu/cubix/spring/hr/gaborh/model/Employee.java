@@ -1,12 +1,9 @@
 package hu.cubix.spring.hr.gaborh.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -21,22 +18,34 @@ public class Employee {
 	@Id
 	@GeneratedValue
 	private long id;
-	@NotEmpty
 	private String name;
-	@NotEmpty
 	private String job;
-	@Positive
 	private Integer salary;
-	@Past
 	private LocalDateTime startDate;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+	@ManyToOne
 	@JoinColumn(name = "company_id")
-	@JsonBackReference
 	private Company company;
 
 	public Employee() {
 
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Employee other = (Employee) obj;
+		return id == other.id;
 	}
 
 	public Employee(long id, @NotEmpty String name, @NotEmpty String job, @Positive Integer salary,

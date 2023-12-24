@@ -2,6 +2,7 @@ package hu.cubix.spring.hr.gaborh.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import hu.cubix.spring.hr.gaborh.dto.EmployeeDto;
 import hu.cubix.spring.hr.gaborh.mapper.EmployeeMapper;
 import hu.cubix.spring.hr.gaborh.model.Employee;
-import hu.cubix.spring.hr.gaborh.service.EmployeeSuperService;
+import hu.cubix.spring.hr.gaborh.service.EmployeeService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -27,52 +28,54 @@ import jakarta.validation.Valid;
 public class HrEmployeesRestController {
 
 	@Autowired
-	private EmployeeSuperService employeeService;
+	private EmployeeService employeeService;
 
 	@Autowired
 	private EmployeeMapper employeeMapper;
 
+//	@Autowired
+//	private EmployeeRepository employeeRepository;		//az employee repository-t ide bekötni élesben nem jó megoldás, elvileg ide csak a service-n keresztül szabadna
+
+// megoldás opcionális paraméterrel	
 	@GetMapping
-	public List<EmployeeDto> listAll() {
-		List<Employee> allEmployees = employeeService.findAll();
-		return employeeMapper.employeesToDtos(allEmployees);
+	public List<EmployeeDto> findAll(@RequestParam Optional<Integer> limitSalary) {
+		// public List<EmployeeDto> findAll(@RequestParam(required = false) Integer
+		// limitSalary) {
+		List<Employee> employees = null;
+		if (limitSalary.isPresent()) {
+			employees = employeeService.findBySalaryGreaterThan(limitSalary.get());
+		} else {
+			employees = employeeService.findAll();
+		}
+
+		return employeeMapper.employeesToDtos(employees);
 	}
 
-	@GetMapping(params = "limit")
-	public List<EmployeeDto> listEmployeesWhoseSalaryIsMoreThan(@RequestParam long limit) {
+//	1. megoldás külön metódus streammel	
+//	@GetMapping(params = "limit")
+//	public List<EmployeeDto> listEmployeesWhoseSalaryIsMoreThan(@RequestParam long limit) {
+//
+//		List<Employee> allEmployees = employeeService.findAll();
+//		return employeeMapper.employeesToDtos(allEmployees.stream().filter(e -> limit < e.getSalary()).toList());
+//	}
 
-//		List<EmployeeDto> result = new ArrayList<>();
-
-//		for (EmployeeDto employee : employees.values()) {
-//			if (limit < employee.getSalary()) {
-//				result.add(employee);
-//			}
+//	@GetMapping("/{id}")
+//	public EmployeeDto findById(@PathVariable long id) {
+//		Employee employee = employeeService.findById(id);
+//		if (employee == null) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 //		}
-//		return result;
-
-//	1. megoldás külön metódus streammel
-		List<Employee> allEmployees = employeeService.findAll();
-		return employeeMapper.employeesToDtos(allEmployees.stream().filter(e -> limit < e.getSalary()).toList());
-	}
-
-// 2. megoldás egy metódusban opcionális paraméterrel
-
-//	@GetMapping
-//	public List<EmployeeDto> listAll(@RequestParam Optional<Integer> limit) {
-
-//	//vagy public List<EmployeeDto> listAll(@RequestParam(required = false) Integer limit) {		 //ebben az esetben limit == null vizsgálatot csinálunk nem isEmpty-t!!  Fontos, hogy a típus Integer, mert az == null nem értelmezhető a primitív int típuson!!       
-
-//		return limit.isEmpty() ? new ArrayList<>(employees.values())
-//				: employees.values().stream().filter(e -> e.getSalary() > limit).toList();
+//		return employeeMapper.employeeToDto(employee);
 //	}
 
 	@GetMapping("/{id}")
 	public EmployeeDto findById(@PathVariable long id) {
-		Employee employee = employeeService.findById(id);
-		if (employee == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
+		Employee employee = findByIdOrThrow(id); // throwing exception is outsourced to standalone method
 		return employeeMapper.employeeToDto(employee);
+	}
+
+	private Employee findByIdOrThrow(long id) {
+		return employeeService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 
 	@PostMapping

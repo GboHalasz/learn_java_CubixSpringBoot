@@ -1,21 +1,23 @@
 package hu.cubix.spring.hr.gaborh.dto;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 public class CompanyDto {
 
-	@JsonView(Views.BaseData.class)
 	private Long id;
-	@JsonView(Views.BaseData.class)
+
 	private Long registrationNumber;
-	@JsonView(Views.BaseData.class)
+
 	private String name;
-	@JsonView(Views.BaseData.class)
+
 	private String address;
 
-	private List<EmployeeDto> employees;
+	private List<EmployeeDto> employees = new ArrayList<>();
+
+	public CompanyDto() {
+
+	}
 
 	public CompanyDto(Long id, Long registrationNumber, String name, String address, List<EmployeeDto> employees) {
 		super();
