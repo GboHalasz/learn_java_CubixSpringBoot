@@ -32,6 +32,7 @@ public interface CompanyMapper {
 
 	EmployeeDto employeeToDto(Employee employee);
 
+	@Mapping(target = "company", ignore = true)
 	Employee dtoToEmployee(EmployeeDto employeeDto);
 
 	List<Employee> dtosToEmployees(List<EmployeeDto> employeeDtos);

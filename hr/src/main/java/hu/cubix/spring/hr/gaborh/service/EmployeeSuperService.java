@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.cubix.spring.hr.gaborh.model.Employee;
+import hu.cubix.spring.hr.gaborh.model.Position;
 import hu.cubix.spring.hr.gaborh.repository.EmployeeRepository;
+import hu.cubix.spring.hr.gaborh.repository.PositionRepository;
 
 @Service
 public abstract class EmployeeSuperService implements EmployeeService {
@@ -16,18 +18,34 @@ public abstract class EmployeeSuperService implements EmployeeService {
 	@Autowired
 	private EmployeeRepository employeeRepository;
 
+	@Autowired
+	private PositionRepository positionRepository;
+	
 	@Override
 	public Employee create(Employee employee) {
-		return employeeRepository.save(employee);
+		if (employeeRepository.existsById(employee.getId()))
+			return null;
+		return save(employee);
 	}
-
+		
 	@Override
 	public Employee update(Employee employee) {
 		if (!employeeRepository.existsById(employee.getId()))
 			return null;
-
+		
+		return save(employee);
+	}
+	
+	@Override
+	public Employee save(Employee employee) {
+		Position position = positionRepository.findBynameOfPosition(employee.getJob().getNameOfPosition());		
+		if (position == null) {
+			return null;
+		}
+		employee.setJob(position);
 		return employeeRepository.save(employee);
 	}
+	
 
 	@Override
 	public List<Employee> findAll() {
@@ -50,8 +68,12 @@ public abstract class EmployeeSuperService implements EmployeeService {
 	}
 
 	@Override
-	public List<Employee> findByJob(String job) {
-		return employeeRepository.findByJob(job);
+	public List<Employee> findByJob(String jobName) {
+		Position position = positionRepository.findBynameOfPosition(jobName);		
+		if (position == null) {
+			return null;
+		}
+		return employeeRepository.findByJob(position);
 	}
 
 	@Override

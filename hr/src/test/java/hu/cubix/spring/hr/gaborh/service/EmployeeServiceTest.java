@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import hu.cubix.spring.hr.gaborh.model.Employee;
+import hu.cubix.spring.hr.gaborh.model.Position;
+import hu.cubix.spring.hr.gaborh.model.Qualification;
 
 class EmployeeServiceTest {
 	
@@ -42,7 +44,8 @@ class EmployeeServiceTest {
 	@Test
 	void getPayRaisePercentMethodShouldReturnsWhatPercentagePayRaiseShouldTheGivenEmployeeGet() {
 		//given
-		Employee employee = new Employee(01L, "Jane Doe", "software developer", 20000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
+		Position developer = new Position("software developer", Qualification.NONE, 20000);
+		Employee employee = new Employee("Jane Doe", developer, 20000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
 		
 		//when
 		int percent = mockObject.getPayRaisePercent(employee);

@@ -13,17 +13,16 @@ class EmployeeTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		employeeUnderTest = new Employee(01L, "Jane Doe", "software developer", 20000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
+		Position developer = new Position("software developer", Qualification.NONE, 20000);
+		employeeUnderTest = new Employee("Jane Doe", developer, 20000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
 	}
 
-	@Test	
+	@Test
 	void canBeCreatedEmployeeObject() {
-		//given
-		//when	
-		//then
+		// given
+		// when
+		// then
 		assertTrue(employeeUnderTest instanceof Employee);
 	}
-
-	
 
 }

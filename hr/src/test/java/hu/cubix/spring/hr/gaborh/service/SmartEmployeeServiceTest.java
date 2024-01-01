@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import hu.cubix.spring.hr.gaborh.model.Employee;
+import hu.cubix.spring.hr.gaborh.model.Position;
+import hu.cubix.spring.hr.gaborh.model.Qualification;
 
 @SpringBootTest
 class SmartEmployeeServiceTest {
@@ -20,14 +22,15 @@ class SmartEmployeeServiceTest {
 	void employeesShouldReceiveDifferentPercentRaisesDependingOnYearsTheySpentAtTheCompany() {
 		// given
 
-		Employee employee13 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(13), null);
-		Employee employee10 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(10), null);
-		Employee employee7 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(7), null);
-		Employee employee5 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(5), null);
-		Employee employee3 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(3), null);
-		Employee employee2_5 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusMonths(30), null);
-		Employee employee2 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(2), null);
-		Employee employee1 = new Employee(01L, "Jane Doe", "software developer", 100, LocalDateTime.now().minusYears(1), null);
+		Position developer = new Position("software developer", Qualification.NONE, 20000);
+		Employee employee13 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(13), null);
+		Employee employee10 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(10), null);
+		Employee employee7 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(7), null);
+		Employee employee5 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(5), null);
+		Employee employee3 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(3), null);
+		Employee employee2_5 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusMonths(30), null);
+		Employee employee2 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(2), null);
+		Employee employee1 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(1), null);
 
 		// when
 		// SalaryService salaryService = new SalaryService(new SmartEmployeeService());

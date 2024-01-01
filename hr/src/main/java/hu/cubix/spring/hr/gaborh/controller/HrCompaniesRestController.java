@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import hu.cubix.spring.hr.gaborh.dto.AvsPJDto;
 import hu.cubix.spring.hr.gaborh.dto.CompanyDto;
 import hu.cubix.spring.hr.gaborh.dto.EmployeeDto;
 import hu.cubix.spring.hr.gaborh.mapper.CompanyMapper;
@@ -38,18 +42,17 @@ public class HrCompaniesRestController {
 
 	@Autowired
 	private CompanyMapper companyMapper;
-	
 
 	// 1. megoldás a full paraméter kezelésére
 	@GetMapping
 	public List<CompanyDto> findAll(@RequestParam Optional<Boolean> full) {
-		
-		List<Company> employees = companyService.findAll();
-		
-		if(full.orElse(false)) {		
-			return companyMapper.companiesToDtos(employees);
+
+		Page<Company> result = companyService.findAll(0, 100, "name", "DESC");
+
+		if (full.orElse(false)) {
+			return companyMapper.companiesToDtos(result.getContent());
 		} else {
-			return companyMapper.companiesToSummaryDtos(employees);
+			return companyMapper.companiesToSummaryDtos(result.getContent());
 		}
 	}
 
@@ -74,10 +77,10 @@ public class HrCompaniesRestController {
 
 		return companyMapper.companyToDto(savedCompany);
 	}
-	
+
 	@PutMapping("/{id}")
 	public CompanyDto update(@RequestBody CompanyDto companyDto, @PathVariable long id) {
-		companyDto.setId(id);		
+		companyDto.setId(id);
 		Company updatedCompany = companyService.update(companyMapper.dtoToCompany(companyDto));
 
 		if (updatedCompany == null)
@@ -88,8 +91,11 @@ public class HrCompaniesRestController {
 
 	@PostMapping("/{cId}/employees")
 	public CompanyDto addEmployee(@PathVariable long cId, @RequestBody @Valid EmployeeDto employeeDto) {
+		
 		Company company = companyService.addEmployee(cId, companyMapper.dtoToEmployee(employeeDto));
-			return companyMapper.companyToDto(company);
+		if (company == null)
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		return companyMapper.companyToDto(company);
 	}
 
 	@PutMapping("/{cId}/employees")
@@ -109,10 +115,6 @@ public class HrCompaniesRestController {
 		return companyMapper.companyToDto(company);
 	}
 
-	
-	
-	
-	
 	@Transactional
 	private Employee getEmployeeOrThrow(long cId) {
 		Optional<Employee> employee = employeeService.findById(cId);
@@ -128,5 +130,26 @@ public class HrCompaniesRestController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		return company;
 	}
+
+	@GetMapping(params = "minSalary")
+	public List<CompanyDto> listCompaniesHaveAtLeastOneEmployeeWithSalaryMoreThan(@RequestParam long minSalary) {
+		return companyMapper
+				.companiesToDtos(companyService.findByEmployeesNotEmptyAndEmployeeSalaryGreaterThan(minSalary));
+	}
+
+	@GetMapping(params = "employeesLimit")
+	public List<CompanyDto> findByEmployeesSizeGreaterThan(@RequestParam long employeesLimit) {
+		return companyMapper.companiesToDtos(companyService.findByEmployeesSizeGreaterThan(employeesLimit));
+	}
+
+	@GetMapping(params = "companyIdForAvgSalary")
+	public List<AvsPJDto> averageSalaryOfEmployeesGrouppedByJobAt(@RequestParam long companyIdForAvgSalary)
+			throws JsonProcessingException {
+		Company company = companyService.findById(companyIdForAvgSalary);
+		if (company == null)
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		return companyService.averageSalaryOfEmployeesGrouppedByJobAt(companyIdForAvgSalary);
+
+	};
 
 }

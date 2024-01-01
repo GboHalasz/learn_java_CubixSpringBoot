@@ -8,9 +8,11 @@ import hu.cubix.spring.hr.gaborh.model.Employee;
 
 public interface EmployeeService {
 	
-public Employee create(Employee employee);
+	public Employee create(Employee employee);
 	
 	public Employee update(Employee employee);
+	
+	public Employee save(Employee employee);
 	
 	public List<Employee> findAll();
 	

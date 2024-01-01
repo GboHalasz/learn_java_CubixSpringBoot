@@ -15,17 +15,21 @@ public class CompanyDto {
 
 	private List<EmployeeDto> employees = new ArrayList<>();
 
+	private CompanyFormDto companyForm;
+
 	public CompanyDto() {
 
 	}
 
-	public CompanyDto(Long id, Long registrationNumber, String name, String address, List<EmployeeDto> employees) {
+	public CompanyDto(Long id, Long registrationNumber, String name, String address, List<EmployeeDto> employees,
+			CompanyFormDto companyForm) {
 		super();
 		this.id = id;
 		this.registrationNumber = registrationNumber;
 		this.name = name;
 		this.address = address;
 		this.employees = employees;
+		this.companyForm = companyForm;
 	}
 
 	public Long getId() {
@@ -66,6 +70,14 @@ public class CompanyDto {
 
 	public void setEmployees(List<EmployeeDto> employees) {
 		this.employees = employees;
+	}
+
+	public CompanyFormDto getCompanyForm() {
+		return companyForm;
+	}
+
+	public void setCompanyForm(CompanyFormDto companyForm) {
+		this.companyForm = companyForm;
 	}
 
 }

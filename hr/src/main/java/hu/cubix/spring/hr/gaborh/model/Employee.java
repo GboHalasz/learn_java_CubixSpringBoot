@@ -8,9 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Positive;
 
 @Entity
 public class Employee {
@@ -19,7 +16,10 @@ public class Employee {
 	@GeneratedValue
 	private long id;
 	private String name;
-	private String job;
+
+	@ManyToOne
+	@JoinColumn(name = "position_id")
+	private Position job;
 	private Integer salary;
 	private LocalDateTime startDate;
 
@@ -31,27 +31,9 @@ public class Employee {
 
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Employee other = (Employee) obj;
-		return id == other.id;
-	}
-
-	public Employee(long id, @NotEmpty String name, @NotEmpty String job, @Positive Integer salary,
-			@Past LocalDateTime startDate, Company company) {
+	public Employee(String name, Position job, Integer salary,
+			LocalDateTime startDate, Company company) {
 		super();
-		this.id = id;
 		this.name = name;
 		this.job = job;
 		this.salary = salary;
@@ -67,7 +49,7 @@ public class Employee {
 		this.name = name;
 	}
 
-	public String getJob() {
+	public Position getJob() {
 		return job;
 	}
 
@@ -79,7 +61,7 @@ public class Employee {
 		this.id = id;
 	}
 
-	public void setJob(String job) {
+	public void setJob(Position job) {
 		this.job = job;
 	}
 
@@ -105,5 +87,22 @@ public class Employee {
 
 	public void setCompany(Company company) {
 		this.company = company;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Employee other = (Employee) obj;
+		return id == other.id;
 	}
 }

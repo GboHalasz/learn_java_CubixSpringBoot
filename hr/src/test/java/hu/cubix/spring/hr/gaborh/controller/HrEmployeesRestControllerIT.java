@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.cubix.spring.hr.gaborh.dto.EmployeeDto;
+import hu.cubix.spring.hr.gaborh.dto.PositionDto;
+import hu.cubix.spring.hr.gaborh.model.Qualification;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class HrEmployeesRestControllerIT {
@@ -36,9 +38,9 @@ public class HrEmployeesRestControllerIT {
 			newId = employeesBefore.get((employeesBefore.size() - 1)).getId() + 1;
 		}
 
-		newEmployee = new EmployeeDto(newId, "test name", "testjob", 10000, LocalDateTime.of(1990, 01, 12, 8, 00));
-		updatedEmployee = new EmployeeDto(newId, "test name2", "testjob2", 20000,
-				LocalDateTime.of(2000, 01, 12, 8, 00));
+		PositionDto developer = new PositionDto("software developer", Qualification.NONE, 20000);
+		newEmployee = new EmployeeDto(newId, "test name", developer, 10000, LocalDateTime.of(1990, 01, 12, 8, 00));
+		updatedEmployee = new EmployeeDto(newId, "test name2", developer, 20000, LocalDateTime.of(2000, 01, 12, 8, 00));
 	}
 
 	@Test
@@ -75,16 +77,6 @@ public class HrEmployeesRestControllerIT {
 	@Test
 	void testThatCreatedEmployeeWithoutJobIsNotListed() {
 		newEmployee.setJob(null);
-
-		createInvalid(newEmployee);
-		List<EmployeeDto> employeesAfter = getAllEmployees();
-
-		assertionsAfterCreateInvalidEmployee(employeesAfter);
-	}
-
-	@Test
-	void testThatCreatedEmployeeWithEmptyStringJobIsNotListed() {
-		newEmployee.setJob("");
 
 		createInvalid(newEmployee);
 		List<EmployeeDto> employeesAfter = getAllEmployees();
@@ -171,17 +163,6 @@ public class HrEmployeesRestControllerIT {
 	}
 
 	@Test
-	void testThatUpdateEmployeeWithEmptyStringJobIsNotListed() {
-		updatedEmployee.setJob("");
-
-		createValid(newEmployee);
-		updateEmployeeWithInvalid(updatedEmployee);
-		List<EmployeeDto> employeesAfter = getAllEmployees();
-
-		assertionsAfterUpdateWithInvalidEmployee(employeesAfter);
-	}
-
-	@Test
 	void testThatUpdateEmployeeWith0SalaryIsNotListed() {
 		updatedEmployee.setSalary(0);
 
@@ -246,18 +227,11 @@ public class HrEmployeesRestControllerIT {
 	}
 
 	private List<EmployeeDto> getAllEmployees() {
-		List<EmployeeDto> allEmployees = webTestClient
-				.get()
-				.uri(API_EMPLOYEES)
-				.exchange()
-				.expectStatus()
-				.isOk()
-				.expectBodyList(EmployeeDto.class).
-				returnResult()
-				.getResponseBody();
+		List<EmployeeDto> allEmployees = webTestClient.get().uri(API_EMPLOYEES).exchange().expectStatus().isOk()
+				.expectBodyList(EmployeeDto.class).returnResult().getResponseBody();
 
-		Collections.sort(allEmployees, Comparator.comparing(e -> e.getId()));  
-		
+		Collections.sort(allEmployees, Comparator.comparing(e -> e.getId()));
+
 //lehet így is: 
 //		Collections.sort(allEmployees, Comparator.comparing(EmployeeDto::getId));
 
