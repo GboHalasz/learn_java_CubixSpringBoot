@@ -1,10 +1,12 @@
 package hu.cubix.spring.hr.gaborh.model;
 
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Position {
@@ -14,17 +16,17 @@ public class Position {
 	private long id;
 	private String nameOfPosition;
 	private Qualification qualification;
-	private long minSalary;
+	
+	@OneToMany(mappedBy = "job")
+	private List<Employee> employees;
 
-	public Position() {
-		super();
+	public Position() {	
 	}
 
-	public Position(String nameOfPosition, Qualification qualification, long minSalary) {
+	public Position(String nameOfPosition, Qualification qualification) {
 		super();
 		this.nameOfPosition = nameOfPosition;
 		this.qualification = qualification;
-		this.minSalary = minSalary;
 	}
 
 	public long getId() {
@@ -51,14 +53,6 @@ public class Position {
 		this.qualification = qualification;
 	}
 
-	public long getMinSalary() {
-		return minSalary;
-	}
-
-	public void setMinSalary(long minSalary) {
-		this.minSalary = minSalary;
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(nameOfPosition);
@@ -75,7 +69,5 @@ public class Position {
 		Position other = (Position) obj;
 		return Objects.equals(nameOfPosition, other.nameOfPosition);
 	}
-
-	
 
 }

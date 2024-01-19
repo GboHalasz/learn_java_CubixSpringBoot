@@ -20,16 +20,17 @@ public interface CompanyMapper {
 	List<CompanyDto> companiesToDtos(List<Company> companies);
 
 	Company dtoToCompany(CompanyDto companyDto);
-	
+
 	@Mapping(target = "employees", ignore = true)
 	@Named("summary")
 	CompanyDto companyToSummaryDto(Company company);
-	
+
 	@IterableMapping(qualifiedByName = "summary")
 	List<CompanyDto> companiesToSummaryDtos(List<Company> companies);
-	
+
 // employee mapperek a company mapperen belül, hogy külön kezeljük, amikor a company oldalról, a company controllerben mappeljük az employee-kat
 
+	@Mapping(target = "company", ignore = true)
 	EmployeeDto employeeToDto(Employee employee);
 
 	@Mapping(target = "company", ignore = true)

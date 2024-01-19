@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import hu.cubix.spring.hr.gaborh.model.Employee;
 
 public interface EmployeeService {
@@ -22,7 +25,7 @@ public interface EmployeeService {
 
 	int getPayRaisePercent(Employee employee);
 	
-	public List<Employee> findBySalaryGreaterThan(int limitSalary);
+	public Page<Employee> findBySalaryGreaterThan(int limitSalary, Pageable pageable);
 	
 	public List<Employee> findByJob(String job);
 	

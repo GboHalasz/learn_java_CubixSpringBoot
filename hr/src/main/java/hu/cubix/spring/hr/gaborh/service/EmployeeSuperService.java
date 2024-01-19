@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import hu.cubix.spring.hr.gaborh.model.Employee;
 import hu.cubix.spring.hr.gaborh.model.Position;
@@ -22,6 +25,7 @@ public abstract class EmployeeSuperService implements EmployeeService {
 	private PositionRepository positionRepository;
 	
 	@Override
+	@Transactional
 	public Employee create(Employee employee) {
 		if (employeeRepository.existsById(employee.getId()))
 			return null;
@@ -29,6 +33,7 @@ public abstract class EmployeeSuperService implements EmployeeService {
 	}
 		
 	@Override
+	@Transactional
 	public Employee update(Employee employee) {
 		if (!employeeRepository.existsById(employee.getId()))
 			return null;
@@ -37,13 +42,22 @@ public abstract class EmployeeSuperService implements EmployeeService {
 	}
 	
 	@Override
+	@Transactional
 	public Employee save(Employee employee) {
-		Position position = positionRepository.findBynameOfPosition(employee.getJob().getNameOfPosition());		
-		if (position == null) {
-			return null;
+		processPosition(employee);
+		return employeeRepository.save(employee);
+	}
+	
+	private void processPosition(Employee employee) {
+		Position position = null;
+		String posName = employee.getJob().getNameOfPosition();
+		if(posName != null) {
+			position = positionRepository.findBynameOfPosition(posName);
+			if(position == null) {
+				position = positionRepository.save(new Position(posName, null));
+			}
 		}
 		employee.setJob(position);
-		return employeeRepository.save(employee);
 	}
 	
 
@@ -58,13 +72,14 @@ public abstract class EmployeeSuperService implements EmployeeService {
 	}
 
 	@Override
+	@Transactional
 	public void delete(long id) {
 		employeeRepository.deleteById(id);
 	}
 	
 	@Override
-	public List<Employee> findBySalaryGreaterThan(int limitSalary) {
-		return employeeRepository.findBySalaryGreaterThan(limitSalary);
+	public Page<Employee> findBySalaryGreaterThan(int limitSalary, Pageable pageable) {
+		return employeeRepository.findBySalaryGreaterThan(limitSalary, pageable);
 	}
 
 	@Override

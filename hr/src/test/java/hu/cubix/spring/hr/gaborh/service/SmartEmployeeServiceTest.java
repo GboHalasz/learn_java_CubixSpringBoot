@@ -22,7 +22,7 @@ class SmartEmployeeServiceTest {
 	void employeesShouldReceiveDifferentPercentRaisesDependingOnYearsTheySpentAtTheCompany() {
 		// given
 
-		Position developer = new Position("software developer", Qualification.NONE, 20000);
+		Position developer = new Position("software developer", Qualification.NONE);
 		Employee employee13 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(13), null);
 		Employee employee10 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(10), null);
 		Employee employee7 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(7), null);

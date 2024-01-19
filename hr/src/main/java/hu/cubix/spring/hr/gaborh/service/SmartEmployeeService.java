@@ -44,7 +44,7 @@ public class SmartEmployeeService extends EmployeeSuperService {
 	//			smartConfig.getPercentForMonthsLimit3());
 																							// Map<Long, Integer> sortedLimits = new TreeMap<>(unsortedLimits);
 
-		int payRaisePercent = 0;		
+//		int payRaisePercent = 0;		
 		
 //		for (Map.Entry<Long, Integer> entry : unsortedLimits.entrySet()) {
 //			if (passedMonth >= entry.getKey() && payRaisePercent < entry.getValue()) {

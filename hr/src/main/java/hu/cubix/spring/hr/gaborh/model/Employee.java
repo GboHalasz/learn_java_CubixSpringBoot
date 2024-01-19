@@ -15,11 +15,13 @@ public class Employee {
 	@Id
 	@GeneratedValue
 	private long id;
+	
 	private String name;
 
 	@ManyToOne
 	@JoinColumn(name = "position_id")
 	private Position job;
+	
 	private Integer salary;
 	private LocalDateTime startDate;
 

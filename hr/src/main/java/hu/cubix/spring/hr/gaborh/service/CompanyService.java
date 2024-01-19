@@ -3,10 +3,6 @@ package hu.cubix.spring.hr.gaborh.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import hu.cubix.spring.hr.gaborh.dto.AvsPJDto;
@@ -60,10 +56,8 @@ public class CompanyService {
 		return companyRepository.save(company);
 	}
 
-	public Page<Company> findAll(int pageNr, int pageSize, String sortBy, String sortDirection) {
-		Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-		Pageable pageable = PageRequest.of(pageNr, pageSize, sort);
-		return companyRepository.findAll(pageable);
+	public List<Company> findAll() {
+		return companyRepository.findAll();
 	}
 
 	public Company findById(long id) {
@@ -87,8 +81,8 @@ public class CompanyService {
 		return companyRepository.findByEmployeesSizeGreaterThan(limit);
 	};
 
-	public List<AvsPJDto> averageSalaryOfEmployeesGrouppedByJobAt(long companyId) {
-		return companyRepository.averageSalaryOfEmployeesGrouppedByJobAt(companyId);
+	public List<AvsPJDto> findAverageSalariesByPosition(long companyId) {
+		return companyRepository.findAverageSalariesByPosition(companyId);
 	};
 
 	// Employee lista műveletek

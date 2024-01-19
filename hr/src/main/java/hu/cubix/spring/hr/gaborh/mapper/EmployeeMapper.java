@@ -11,6 +11,7 @@ import hu.cubix.spring.hr.gaborh.model.Employee;
 @Mapper(componentModel = "spring")
 public interface EmployeeMapper {
 
+	@Mapping(target = "company.employees", ignore = true)
 	EmployeeDto employeeToDto(Employee employee);
 
 	@Mapping(target = "company", ignore = true)

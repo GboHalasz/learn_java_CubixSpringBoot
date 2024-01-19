@@ -7,17 +7,15 @@ public class PositionDto {
 	private long id;
 	private String nameOfPosition;
 	private Qualification qualification;
-	private long minSalary;
 
 	public PositionDto() {
 
 	}
 
-	public PositionDto(String nameOfPosition, Qualification qualification, long minSalary) {
+	public PositionDto(String nameOfPosition, Qualification qualification) {
 		super();
 		this.nameOfPosition = nameOfPosition;
 		this.qualification = qualification;
-		this.minSalary = minSalary;
 	}
 
 	public long getId() {
@@ -42,14 +40,6 @@ public class PositionDto {
 
 	public void setQualification(Qualification qualification) {
 		this.qualification = qualification;
-	}
-
-	public long getMinSalary() {
-		return minSalary;
-	}
-
-	public void setMinSalary(long minSalary) {
-		this.minSalary = minSalary;
 	}
 
 }

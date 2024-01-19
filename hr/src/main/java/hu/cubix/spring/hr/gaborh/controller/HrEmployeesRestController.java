@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,12 +41,18 @@ public class HrEmployeesRestController {
 
 // megoldás opcionális paraméterrel	
 	@GetMapping
-	public List<EmployeeDto> findAll(@RequestParam Optional<Integer> limitSalary) {
+	public List<EmployeeDto> findAll(@RequestParam Optional<Integer> limitSalary, @SortDefault("id") Pageable pageable /*query param: page, size, sort*/) {
 		// public List<EmployeeDto> findAll(@RequestParam(required = false) Integer
 		// limitSalary) {
 		List<Employee> employees = null;
 		if (limitSalary.isPresent()) {
-			employees = employeeService.findBySalaryGreaterThan(limitSalary.get());
+			Page<Employee> employeePage = employeeService.findBySalaryGreaterThan(limitSalary.get(), pageable);
+			employees = employeePage.getContent();
+			System.out.println(employeePage.getTotalElements());
+			System.out.println(employeePage.isFirst());
+			System.out.println(employeePage.isLast());
+			System.out.println(employeePage.hasPrevious());
+			System.out.println(employeePage.hasNext());
 		} else {
 			employees = employeeService.findAll();
 		}
