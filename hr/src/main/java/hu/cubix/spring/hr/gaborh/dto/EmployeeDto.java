@@ -25,6 +25,14 @@ public class EmployeeDto {
 
 	}
 
+	public EmployeeDto(String name, PositionDto job, Integer salary, LocalDateTime startDate) {
+		super();		
+		this.name = name;
+		this.job = job;
+		this.salary = salary;
+		this.startDate = startDate;
+	}
+	
 	public EmployeeDto(long id, String name, PositionDto job, Integer salary, LocalDateTime startDate) {
 		super();
 		this.id = id;

@@ -27,7 +27,7 @@ public class CompanyService {
 
 	@Autowired
 	private CompanyFormRepository companyFormRepository;
-	
+
 	@Autowired
 	private PositionRepository positionRepository;
 
@@ -47,21 +47,38 @@ public class CompanyService {
 		return save(company);
 	}
 
+	@Transactional
 	public Company save(Company company) {
-		CompanyForm companyForm = companyFormRepository.findByname(company.getCompanyForm().getName());		
-		if (companyForm == null) {
-			return null;
+		processCompanyForm(company);
+		return companyRepository.save(company);
+	}
+
+	private void processCompanyForm(Company company) {
+		CompanyForm companyForm = null;
+		String formName = company.getCompanyForm().getName();
+		if (formName != null) {
+			companyForm = companyFormRepository.findByname(formName);
+			if (companyForm == null) {
+				companyForm = companyFormRepository.save(new CompanyForm(formName));
+			}
 		}
 		company.setCompanyForm(companyForm);
-		return companyRepository.save(company);
 	}
 
 	public List<Company> findAll() {
 		return companyRepository.findAll();
 	}
 
+	public List<Company> findAllWithEmployees() {
+		return companyRepository.findAllWithEmployees();
+	}
+
 	public Company findById(long id) {
 		return companyRepository.findById(id).orElse(null);
+	}
+
+	public Company findByIdWithEmployees(long id) {
+		return companyRepository.findByIdWithEmployees(id).orElse(null);
 	}
 
 	@Transactional
@@ -86,22 +103,20 @@ public class CompanyService {
 	};
 
 	// Employee lista műveletek
+	@Transactional
+	public Company addEmployee(long cId, Employee employee) {
+		Company company = companyRepository.findByIdWithEmployees(cId).get(); // a repository alapból Optional típust ad
+																				// vissza, ezért a .get()
 
-	public Company addEmployee(long cId, Employee employee) { 
-		Company company = companyRepository.findById(cId).get(); // a repository alapból Optional típust ad vissza, ezért a .get()
-		Position position = positionRepository.findBynameOfPosition(employee.getJob().getNameOfPosition());		
-		if (position == null) {
-			return null;
-		}
-		employee.setJob(position);
-				
+		processPosition(employee);
 		company.addEmployee(employee);
 		employeeRepository.save(employee);
 		return company;
 	}
 
+	@Transactional
 	public Company deleteEmployee(long id, long employeeId) {
-		Company company = companyRepository.findById(id).get();
+		Company company = companyRepository.findByIdWithEmployees(id).get();
 		Employee employee = employeeRepository.findById(employeeId).get();
 		employee.setCompany(null);
 		company.getEmployees().remove(employee);
@@ -109,24 +124,32 @@ public class CompanyService {
 		return company;
 	}
 
+	@Transactional
 	public Company replaceEmployees(long cId, List<Employee> employees) {
-		Company company = companyRepository.findById(cId).get();
+		Company company = companyRepository.findByIdWithEmployees(cId).get();
 		for (Employee emp : company.getEmployees()) {
 			emp.setCompany(null);
 		}
 		company.getEmployees().clear();
 		for (Employee emp : employees) {
-			Position position = positionRepository.findBynameOfPosition(emp.getJob().getNameOfPosition());		
-			if (position == null) {
-				return null;
-			}
-			emp.setJob(position);
+			processPosition(emp);
 			company.addEmployee(emp);
 			employeeRepository.save(emp);
 		}
 		return company;
 	}
-	
+
+	private void processPosition(Employee employee) {
+		Position position = null;
+		String posName = employee.getJob().getNameOfPosition();
+		if (posName != null) {
+			position = positionRepository.findBynameOfPosition(posName);
+			if (position == null) {
+				position = positionRepository.save(new Position(posName, null));
+			}
+		}
+		employee.setJob(position);
+	}
 
 	// CompanyForm műveletek
 
@@ -145,7 +168,8 @@ public class CompanyService {
 		}
 		return save(companyForm);
 	}
-
+	
+	@Transactional
 	public CompanyForm save(CompanyForm companyForm) {
 		return companyFormRepository.save(companyForm);
 	}

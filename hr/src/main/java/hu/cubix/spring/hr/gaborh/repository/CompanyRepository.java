@@ -1,6 +1,7 @@
 package hu.cubix.spring.hr.gaborh.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,13 @@ import hu.cubix.spring.hr.gaborh.dto.AvsPJDto;
 import hu.cubix.spring.hr.gaborh.model.Company;
 
 public interface CompanyRepository extends JpaRepository<Company, Long> {
+	
+	@Query("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.employees")
+	public List<Company> findAllWithEmployees();
+	
+	@Query("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.employees WHERE c.id = :cId")
+	public Optional<Company> findByIdWithEmployees(long cId);	
+	
 	@Query("SELECT DISTINCT c FROM Company c JOIN c.employees e WHERE e.salary > :minSalary")
 	List<Company> findByEmployeesNotEmptyAndEmployeeSalaryGreaterThan(long minSalary);
 

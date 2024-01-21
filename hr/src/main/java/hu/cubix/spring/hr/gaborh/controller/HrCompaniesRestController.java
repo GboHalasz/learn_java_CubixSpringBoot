@@ -48,14 +48,16 @@ public class HrCompaniesRestController {
 	@GetMapping
 	public List<CompanyDto> findAll(@RequestParam Optional<Boolean> full) {
 
-		List<Company> companies = companyService.findAll();
+		List<Company> companies = full.orElse(false) 
+				? companyService.findAllWithEmployees()
+				: companyService.findAll();
 
 		return mapCompanies(companies, full);
 	}
 
 	@GetMapping("/{id}")
 	public CompanyDto findById(@PathVariable long id, @RequestParam Optional<Boolean> full) {
-		Company company = getCompanyOrThrow(id);
+		Company company =  getCompanyOrThrow(id, full);
 		if (full.orElse(false)) {
 			return companyMapper.companyToDto(company);
 		} else {
@@ -148,8 +150,10 @@ public class HrCompaniesRestController {
 	}
 
 	@Transactional
-	private Company getCompanyOrThrow(long cId) {
-		Company company = companyService.findById(cId);
+	private Company getCompanyOrThrow(long cId, Optional<Boolean> full) {
+		Company company = full.orElse(false) 
+				? companyService.findByIdWithEmployees(cId)
+				: companyService.findById(cId);
 		if (company == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		return company;

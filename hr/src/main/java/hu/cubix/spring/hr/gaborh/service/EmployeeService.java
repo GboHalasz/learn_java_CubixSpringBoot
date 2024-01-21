@@ -32,4 +32,6 @@ public interface EmployeeService {
 	public List<Employee> findByNamePrefix(String searchPrefix);
 	
 	public List<Employee> findByStartDateBetween(LocalDateTime start, LocalDateTime end);
+	
+	public List<Employee> findEmployeesByExample(Employee employee);
 }

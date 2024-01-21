@@ -76,7 +76,7 @@ public class HrEmployeesRestController {
 //		}
 //		return employeeMapper.employeeToDto(employee);
 //	}
-
+	
 	@GetMapping("/{id}")
 	public EmployeeDto findById(@PathVariable long id) {
 		Employee employee = findByIdOrThrow(id); // throwing exception is outsourced to standalone method
@@ -97,6 +97,13 @@ public class HrEmployeesRestController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
 		return employeeMapper.employeeToDto(savedEmployee);
+	}
+	
+	@PostMapping("/search")
+	public List<EmployeeDto> findEmployeesByExample(@RequestBody EmployeeDto employeeDto) {
+		List<Employee> employees = employeeService.findEmployeesByExample(employeeMapper.dtoToEmployeeWithCompany(employeeDto));
+		
+		return employeeMapper.employeesToDtos(employees);
 	}
 
 	@PutMapping("/{id}")
