@@ -12,9 +12,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import hu.cubix.spring.hr.gaborh.model.Company;
 import hu.cubix.spring.hr.gaborh.model.CompanyForm;
 import hu.cubix.spring.hr.gaborh.model.Employee;
+import hu.cubix.spring.hr.gaborh.model.ManagerByCompany;
 import hu.cubix.spring.hr.gaborh.model.Position;
 import hu.cubix.spring.hr.gaborh.model.PositionDetailsByCompany;
 import hu.cubix.spring.hr.gaborh.model.Qualification;
+import hu.cubix.spring.hr.gaborh.repository.ManagerByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.service.CompanyService;
 import hu.cubix.spring.hr.gaborh.service.InitDbService;
 import hu.cubix.spring.hr.gaborh.service.SalaryService;
@@ -30,7 +32,10 @@ public class HrApplication implements CommandLineRunner {
 
 	@Autowired
 	CompanyService companyService;
-	
+
+	@Autowired
+	ManagerByCompanyRepository managerByCompanyRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(HrApplication.class, args);
 	}
@@ -39,8 +44,7 @@ public class HrApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		List<Position> positions = Arrays.asList(new Position("software developer", Qualification.NONE),
-				new Position("data-analyst", Qualification.COLLEGE),
-				new Position("devops", Qualification.NONE),
+				new Position("data-analyst", Qualification.COLLEGE), new Position("devops", Qualification.NONE),
 				new Position("lead software developer", Qualification.UNIVERSITY));
 
 		List<CompanyForm> companyForms = Arrays.asList(new CompanyForm("LLC"), new CompanyForm("Limited Partnership"),
@@ -53,34 +57,34 @@ public class HrApplication implements CommandLineRunner {
 				new Company(04L, 4, "FirstCompany", "1205 Budapest, Bécsi út 3.", companyForms.get(2), null));
 
 		List<Employee> testEmployeeList = Arrays.asList(
-				new Employee("Ms Jane Doe", positions.get(0), 40000, LocalDateTime.now().minusYears(13),
-						testCompanyList.get(0)),
-				new Employee("Mr Jack Litle", positions.get(1), 30000, LocalDateTime.now().minusYears(5),
+				new Employee("Boss Doe", positions.get(0), 40000, LocalDateTime.now().minusYears(13),
+						testCompanyList.get(0)),				
+				new Employee("Junior Litle", positions.get(1), 30000, LocalDateTime.now().minusYears(5),
 						testCompanyList.get(0)),
 				new Employee("Adam Doe", positions.get(2), 30000, LocalDateTime.now().minusYears(2),
+						testCompanyList.get(3)),
+				new Employee("Little Joe", positions.get(0), 25000, LocalDateTime.now().minusYears(2),
 						testCompanyList.get(3)),
 				new Employee("Mrs Lil Doe", positions.get(3), 40000, LocalDateTime.now().minusMonths(30),
 						testCompanyList.get(0)),
 				new Employee("Mr. Peter Sramek", positions.get(2), 35000, LocalDateTime.now().minusMonths(30),
-						testCompanyList.get(0))
-				);
-		
+						testCompanyList.get(0)));
+
 		PositionDetailsByCompany pd = new PositionDetailsByCompany();
 		pd.setCompany(testCompanyList.get(0));
 		pd.setMinSalary(25000);
 		pd.setPosition(positions.get(0));
-		
-		
+
 		PositionDetailsByCompany pd2 = new PositionDetailsByCompany();
 		pd2.setCompany(testCompanyList.get(0));
 		pd2.setMinSalary(20000);
 		pd2.setPosition(positions.get(1));
-		
+
 		PositionDetailsByCompany pd3 = new PositionDetailsByCompany();
 		pd3.setCompany(testCompanyList.get(0));
 		pd3.setMinSalary(30000);
 		pd3.setPosition(positions.get(2));
-		
+
 		List<PositionDetailsByCompany> testPositionDetalisByCompanyList = Arrays.asList(pd, pd2, pd3);
 
 		testEmployeeList.stream().forEach(employee -> {
@@ -89,8 +93,10 @@ public class HrApplication implements CommandLineRunner {
 		});
 
 		initDbService.clearDB();
-		initDbService.insertTestData(positions, companyForms, testCompanyList, testEmployeeList, testPositionDetalisByCompanyList);
-		
+		List<Employee> savedEmployees = initDbService.insertTestData(positions, companyForms, testCompanyList,
+				testEmployeeList, testPositionDetalisByCompanyList);
+		managerByCompanyRepository.save(new ManagerByCompany(savedEmployees.get(0),
+				savedEmployees.get(0).getCompany()));
 	}
 
 }

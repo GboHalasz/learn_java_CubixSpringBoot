@@ -39,8 +39,8 @@ public class HrEmployeesRestControllerIT {
 		}
 
 		PositionDto developer = new PositionDto("software developer", Qualification.NONE);
-		newEmployee = new EmployeeDto(newId, "test name", developer, 10000, LocalDateTime.of(1990, 01, 12, 8, 00));
-		updatedEmployee = new EmployeeDto(newId, "test name2", developer, 20000, LocalDateTime.of(2000, 01, 12, 8, 00));
+		newEmployee = new EmployeeDto(newId, "test name", developer, 10000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
+		updatedEmployee = new EmployeeDto(newId, "test name2", developer, 20000, LocalDateTime.of(2000, 01, 12, 8, 00), null);
 	}
 
 	@Test

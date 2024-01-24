@@ -40,7 +40,7 @@ public class Employee {
 		this.job = job;
 		this.salary = salary;
 		this.startDate = startDate;
-		this.company = company;
+		this.company = company;		
 	}
 
 	public String getName() {
@@ -107,4 +107,11 @@ public class Employee {
 		Employee other = (Employee) obj;
 		return id == other.id;
 	}
+
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", name=" + name + ", job=" + job + ", salary=" + salary + ", startDate="
+				+ startDate + ", company=" + company + "]";
+	}
+	
 }

@@ -19,27 +19,28 @@ public class EmployeeDto {
 	@Past
 	private LocalDateTime startDate;
 
-	private CompanyDto company;
+	private CompanyDto company;	
 
 	public EmployeeDto() {
 
 	}
 
 	public EmployeeDto(String name, PositionDto job, Integer salary, LocalDateTime startDate) {
-		super();		
+		super();
 		this.name = name;
 		this.job = job;
 		this.salary = salary;
-		this.startDate = startDate;
+		this.startDate = startDate;		
 	}
-	
-	public EmployeeDto(long id, String name, PositionDto job, Integer salary, LocalDateTime startDate) {
+
+	public EmployeeDto(long id, String name, PositionDto job, Integer salary, LocalDateTime startDate,
+			EmployeeDto manager) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.job = job;
 		this.salary = salary;
-		this.startDate = startDate;
+		this.startDate = startDate;		
 	}
 
 	public PositionDto getJob() {

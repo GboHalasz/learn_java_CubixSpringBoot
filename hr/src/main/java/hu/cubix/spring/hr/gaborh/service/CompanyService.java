@@ -119,8 +119,7 @@ public class CompanyService {
 		Company company = companyRepository.findByIdWithEmployees(id).get();
 		Employee employee = employeeRepository.findById(employeeId).get();
 		employee.setCompany(null);
-		company.getEmployees().remove(employee);
-		employeeRepository.save(employee);
+		company.getEmployees().remove(employee);		
 		return company;
 	}
 

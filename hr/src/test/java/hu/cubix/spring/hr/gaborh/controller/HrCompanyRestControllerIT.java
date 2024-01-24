@@ -27,8 +27,10 @@ import hu.cubix.spring.hr.gaborh.model.Qualification;
 import hu.cubix.spring.hr.gaborh.repository.CompanyFormRepository;
 import hu.cubix.spring.hr.gaborh.repository.CompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.EmployeeRepository;
+import hu.cubix.spring.hr.gaborh.repository.ManagerByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.PositionDetailsByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.PositionRepository;
+import hu.cubix.spring.hr.gaborh.repository.TimeOffRequestRepository;
 import hu.cubix.spring.hr.gaborh.service.CompanyService;
 import hu.cubix.spring.hr.gaborh.service.EmployeeService;
 
@@ -64,6 +66,12 @@ public class HrCompanyRestControllerIT {
 
 	@Autowired
 	PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
+	
+	@Autowired
+	ManagerByCompanyRepository managerByCompanyRepository;
+	
+	@Autowired
+	TimeOffRequestRepository timeOffRequestRepository;
 
 	private Company savedCompany;
 	private PositionDto positionDto;
@@ -71,6 +79,8 @@ public class HrCompanyRestControllerIT {
 
 	@BeforeEach
 	public void init() {
+		managerByCompanyRepository.deleteAllInBatch();
+		timeOffRequestRepository.deleteAllInBatch();
 		employeeRepository.deleteAllInBatch();
 		positionDetailsByCompanyRepository.deleteAllInBatch();
 		companyRepository.deleteAllInBatch();
