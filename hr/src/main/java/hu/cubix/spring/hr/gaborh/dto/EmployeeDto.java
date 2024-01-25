@@ -19,7 +19,10 @@ public class EmployeeDto {
 	@Past
 	private LocalDateTime startDate;
 
-	private CompanyDto company;	
+	private CompanyDto company;
+	
+	private String username;
+	private String password;
 
 	public EmployeeDto() {
 
@@ -89,6 +92,22 @@ public class EmployeeDto {
 
 	public void setCompany(CompanyDto company) {
 		this.company = company;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

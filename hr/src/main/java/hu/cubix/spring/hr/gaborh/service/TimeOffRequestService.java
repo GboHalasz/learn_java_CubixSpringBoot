@@ -9,12 +9,15 @@ import static hu.cubix.spring.hr.gaborh.service.TimeOffRequestSpecifications.sub
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -24,6 +27,7 @@ import hu.cubix.spring.hr.gaborh.model.TimeOffRequest;
 import hu.cubix.spring.hr.gaborh.model.TimeOffRequestStatus;
 import hu.cubix.spring.hr.gaborh.repository.ManagerByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.TimeOffRequestRepository;
+import hu.cubix.spring.hr.gaborh.security.HrUser;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -45,33 +49,31 @@ public class TimeOffRequestService {
 			return null;
 		}
 
-// Az útvonalat csak bejelentkezett felhasználó érheti el.
-// A submitter a SecurityContext-ből a bejelentkezett felhasználó lesz
+		Employee currentUser = getCurrentHrUser().getEmployee();
 
-// Az approver beállító logikát kiemelni külön funkciókba és felhasználni az approve denie funkciókban!!		
-		Optional<Employee> submitter = employeeService.findById(timeOffRequest.getSubmitter().getId());
-		if (submitter.isEmpty()) {
-			return null;
-		}
-//		timeOffRequest.setSubmitter(submitter.get());
+		timeOffRequest.setSubmitter(currentUser);
 		timeOffRequest.setApprover(null);
 		timeOffRequest.setStatus(TimeOffRequestStatus.NOT_JUDGED);
-
-//		List<ManagerByCompany> managersByCompany = managerByCompanyRepository
-//				.findByCompany(timeOffRequest.getSubmitter().getCompany());
-//		if (!managersByCompany.isEmpty()) {
-//			timeOffRequest.setApprover(managersByCompany.get(0).getManager());
-//		}
 
 		return save(timeOffRequest);
 	}
 
 	@Transactional
 	public TimeOffRequest update(TimeOffRequest timeOffRequest) {
-		if (findById(timeOffRequest.getId()).isEmpty()) {
-			return null;
+		TimeOffRequest storedRequest = findById(timeOffRequest.getId()).orElseThrow(() -> new NoSuchElementException());
+		Employee currentUser = getCurrentHrUser().getEmployee();
+
+		if (storedRequest.getSubmitter().getId() != currentUser.getId()) {
+			throw new AccessDeniedException("You can only update your own requests!");
 		}
-		return save(timeOffRequest);
+
+		if (storedRequest.getStatus() != TimeOffRequestStatus.NOT_JUDGED)
+			throw new AccessDeniedException("You can't update assessed requests!");
+
+		storedRequest.setStartDate(timeOffRequest.getStartDate());
+		storedRequest.setEndDate(timeOffRequest.getEndDate());
+
+		return storedRequest;
 	}
 
 	@Transactional
@@ -141,18 +143,41 @@ public class TimeOffRequestService {
 
 		return timeOffRequestRepository.findAll(specs);
 	}
-	
+
 	@Transactional
-	public TimeOffRequest approve(TimeOffRequest timeOffRequest) {
-		timeOffRequest.setStatus(TimeOffRequestStatus.APPROVED);
-//		timeOffRequest.setApprover(null);    						set from Security Context		
-		return save(timeOffRequest);
+	public TimeOffRequest approve(long id) {
+		TimeOffRequest request = findById(id).orElseThrow(() -> new NoSuchElementException());
+		Employee currentUser = getCurrentHrUser().getEmployee();
+		Employee managerOfSubmitter = managerByCompanyRepository.findByCompany(request.getSubmitter().getCompany())
+				.get(0).getManager();
+		if (managerOfSubmitter != null && managerOfSubmitter.getId() != (currentUser.getId())) {
+			throw new AccessDeniedException(
+					"Trying to approve holiday request where the employee's manager is not the current user");
+		}
+
+		request.setStatus(TimeOffRequestStatus.APPROVED);
+		request.setApprover(currentUser);
+		return request;
 	}
-	
+
 	@Transactional
-	public TimeOffRequest reject(TimeOffRequest timeOffRequest) {
-		timeOffRequest.setStatus(TimeOffRequestStatus.REJECTED);
-//		timeOffRequest.setApprover(null);    						set from Security Context
-		return save(timeOffRequest);
+	public TimeOffRequest reject(long id) {
+		TimeOffRequest request = findById(id).orElseThrow(() -> new NoSuchElementException());
+		Employee currentUser = getCurrentHrUser().getEmployee();
+		Employee managerOfSubmitter = managerByCompanyRepository.findByCompany(request.getSubmitter().getCompany())
+				.get(0).getManager();
+		if (managerOfSubmitter != null && managerOfSubmitter.getId() != (currentUser.getId())) {
+			throw new AccessDeniedException(
+					"Trying to approve holiday request where the employee's manager is not the current user");
+		}
+
+		request.setStatus(TimeOffRequestStatus.REJECTED);
+		request.setApprover(currentUser);
+		return request;
 	}
+
+	private HrUser getCurrentHrUser() {
+		return (HrUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	}
+
 }

@@ -1,12 +1,16 @@
 package hu.cubix.spring.hr.gaborh.controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,8 +24,10 @@ import org.springframework.web.server.ResponseStatusException;
 import hu.cubix.spring.hr.gaborh.dto.TimeOffRequestDto;
 import hu.cubix.spring.hr.gaborh.dto.TimeOffRequestSearchDto;
 import hu.cubix.spring.hr.gaborh.mapper.TimeOffRequestMapper;
+import hu.cubix.spring.hr.gaborh.model.Employee;
 import hu.cubix.spring.hr.gaborh.model.TimeOffRequest;
 import hu.cubix.spring.hr.gaborh.model.TimeOffRequestStatus;
+import hu.cubix.spring.hr.gaborh.security.HrUser;
 import hu.cubix.spring.hr.gaborh.service.TimeOffRequestService;
 
 @RestController
@@ -65,6 +71,7 @@ public class HrTimeOffRequestsRestController {
 	}
 
 	@PostMapping
+	@PreAuthorize("#timeOffRequestDto.submitterId == authentication.principal.employee.id")
 	public TimeOffRequestDto create(@RequestBody TimeOffRequestDto timeOffRequestDto) {
 
 		TimeOffRequest timeOffRequest = timeOffRequestMapper.dtoToTimeOffRequest(timeOffRequestDto);
@@ -76,20 +83,18 @@ public class HrTimeOffRequestsRestController {
 		return timeOffRequestMapper.timeOffRequestToDto(savedTimeOffRequest);
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping("/{id}")	
 	public TimeOffRequestDto update(@PathVariable long id, @RequestBody TimeOffRequestDto timeOffRequestDto) {
-		TimeOffRequest timeOffRequestEntity = findByIdOrThrow(id);
-
-		if (timeOffRequestEntity.getStatus() != TimeOffRequestStatus.NOT_JUDGED)
-			throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
-
-		timeOffRequestEntity.setStartDate(timeOffRequestDto.getStartDate());
-		timeOffRequestEntity.setEndDate(timeOffRequestDto.getEndDate());
-
-		TimeOffRequest updatedTimeOffRequest = timeOffRequestService.update(timeOffRequestEntity);
-
-		if (updatedTimeOffRequest == null)
+		timeOffRequestDto.setId(id);
+		TimeOffRequest updatedTimeOffRequest;
+		try {
+			updatedTimeOffRequest = timeOffRequestService.update(timeOffRequestMapper.dtoToTimeOffRequest(timeOffRequestDto));
+					
+		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		} catch (AccessDeniedException e) {
+			throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
+		}
 
 		return timeOffRequestMapper.timeOffRequestToDto(updatedTimeOffRequest);
 	}
@@ -97,23 +102,42 @@ public class HrTimeOffRequestsRestController {
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable long id) {
 		TimeOffRequest timeOffRequestEntity = findByIdOrThrow(id);
+		if(timeOffRequestEntity.getSubmitter().getId() != (getCurrentHrUser().getEmployee().getId())) {
+			throw new AccessDeniedException("Trying to delete holiday request of a different user");
+		}
 		if (timeOffRequestEntity.getStatus() != TimeOffRequestStatus.NOT_JUDGED)
 			throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
 
 		timeOffRequestService.delete(id);
 	}
 
+	private HrUser getCurrentHrUser() {		
+		return (HrUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	}
+
 	@GetMapping("/{id}/approve")
 	public TimeOffRequestDto approve(@PathVariable long id) {
-		TimeOffRequest timeOffRequest = findByIdOrThrow(id);
-		TimeOffRequest approvedRequest = timeOffRequestService.approve(timeOffRequest);
+		TimeOffRequest approvedRequest;
+		try {
+			approvedRequest = timeOffRequestService.approve(id);
+		} catch (NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		} catch (AccessDeniedException e) {
+			throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
+		}
 		return timeOffRequestMapper.timeOffRequestToDto(approvedRequest);
 	}
 
 	@GetMapping("/{id}/reject")
 	public TimeOffRequestDto reject(@PathVariable long id) {
-		TimeOffRequest timeOffRequest = findByIdOrThrow(id);
-		TimeOffRequest rejectedRequest = timeOffRequestService.reject(timeOffRequest);
+		TimeOffRequest rejectedRequest;
+		try {
+			rejectedRequest = timeOffRequestService.reject(id);
+		} catch (NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		} catch (AccessDeniedException e) {
+			throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
+		}
 		return timeOffRequestMapper.timeOffRequestToDto(rejectedRequest);
 	}
 }

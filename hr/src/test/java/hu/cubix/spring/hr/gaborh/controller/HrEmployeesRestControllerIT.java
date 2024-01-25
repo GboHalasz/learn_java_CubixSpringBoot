@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -19,6 +20,7 @@ import hu.cubix.spring.hr.gaborh.dto.PositionDto;
 import hu.cubix.spring.hr.gaborh.model.Qualification;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase
 public class HrEmployeesRestControllerIT {
 
 	private static final String API_EMPLOYEES = "/api/employees";
@@ -49,9 +51,14 @@ public class HrEmployeesRestControllerIT {
 		createValid(newEmployee);
 		List<EmployeeDto> employeesAfter = getAllEmployees();
 
-		assertThat(employeesAfter.subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator()
-				.containsExactlyElementsOf(employeesBefore);
-		assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().isEqualTo(newEmployee);
+		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
+		assertThat(employeesAfter.subList(0, employeesBefore.size()))
+			.usingRecursiveFieldByFieldElementComparator()
+			.containsExactlyElementsOf(employeesBefore);
+		assertThat(employeesAfter.get(employeesAfter.size() - 1))
+			.usingRecursiveComparison()
+			.ignoringFields("id", "job.id")
+			.isEqualTo(newEmployee);
 	}
 
 	@Test
@@ -126,7 +133,10 @@ public class HrEmployeesRestControllerIT {
 		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
 		assertThat(employeesAfter.subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyElementsOf(employeesBefore);
-		assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().isEqualTo(updatedEmployee);
+		assertThat(employeesAfter.get(employeesAfter.size() - 1))
+			.usingRecursiveComparison()
+			.ignoringFields("job.id")
+			.isEqualTo(updatedEmployee);
 	}
 
 	@Test
@@ -205,7 +215,10 @@ public class HrEmployeesRestControllerIT {
 		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
 		assertThat(employeesAfter.subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyElementsOf(employeesBefore);
-		assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().isEqualTo(newEmployee);
+		assertThat(employeesAfter.get(employeesAfter.size() - 1))
+			.usingRecursiveComparison()
+			.ignoringFields("job.id")
+			.isEqualTo(newEmployee);
 	}
 
 	private void updateEmployeeWithValid(EmployeeDto employeeDto) {

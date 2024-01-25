@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import hu.cubix.spring.hr.gaborh.model.Employee;
 import hu.cubix.spring.hr.gaborh.model.Position;
+import hu.cubix.spring.hr.gaborh.model.Qualification;
 import hu.cubix.spring.hr.gaborh.repository.EmployeeRepository;
 import hu.cubix.spring.hr.gaborh.repository.PositionRepository;
 
@@ -61,10 +62,11 @@ public abstract class EmployeeSuperService implements EmployeeService {
 	private void processPosition(Employee employee) {
 		Position position = null;
 		String posName = employee.getJob().getNameOfPosition();
+		Qualification posQuali = employee.getJob().getQualification();	
 		if (posName != null) {
 			position = positionRepository.findBynameOfPosition(posName);
 			if (position == null) {
-				position = positionRepository.save(new Position(posName, null));
+				position = positionRepository.save(new Position(posName, posQuali));
 			}
 		}
 		employee.setJob(position);

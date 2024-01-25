@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import hu.cubix.spring.hr.gaborh.model.Company;
 import hu.cubix.spring.hr.gaborh.model.CompanyForm;
@@ -35,6 +36,9 @@ public class HrApplication implements CommandLineRunner {
 
 	@Autowired
 	ManagerByCompanyRepository managerByCompanyRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	public static void main(String[] args) {
 		SpringApplication.run(HrApplication.class, args);
@@ -70,6 +74,11 @@ public class HrApplication implements CommandLineRunner {
 				new Employee("Mr. Peter Sramek", positions.get(2), 35000, LocalDateTime.now().minusMonths(30),
 						testCompanyList.get(0)));
 
+		testEmployeeList.get(0).setUsername("user1");
+		testEmployeeList.get(0).setPassword(passwordEncoder.encode("pass"));
+		testEmployeeList.get(1).setUsername("user2");
+		testEmployeeList.get(1).setPassword(passwordEncoder.encode("pass"));
+		
 		PositionDetailsByCompany pd = new PositionDetailsByCompany();
 		pd.setCompany(testCompanyList.get(0));
 		pd.setMinSalary(25000);
@@ -96,7 +105,7 @@ public class HrApplication implements CommandLineRunner {
 		List<Employee> savedEmployees = initDbService.insertTestData(positions, companyForms, testCompanyList,
 				testEmployeeList, testPositionDetalisByCompanyList);
 		managerByCompanyRepository.save(new ManagerByCompany(savedEmployees.get(0),
-				savedEmployees.get(0).getCompany()));
+				savedEmployees.get(0).getCompany()));		
 	}
 
 }

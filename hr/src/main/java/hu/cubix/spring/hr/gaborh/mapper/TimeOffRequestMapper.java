@@ -17,7 +17,8 @@ public interface TimeOffRequestMapper {
 	TimeOffRequestDto timeOffRequestToDto(TimeOffRequest timeOffRequest);
 
 	@Mapping(target = "status", ignore = true)
-	@Mapping(target = "approver", ignore = true)
+	@Mapping(target = "approver", ignore = true)	
+	@Mapping(target = "submitter", ignore = true)	
 	@Mapping(target = "createdAt", ignore = true)
 	@InheritInverseConfiguration
 	TimeOffRequest dtoToTimeOffRequest(TimeOffRequestDto timeOffRequestDto);

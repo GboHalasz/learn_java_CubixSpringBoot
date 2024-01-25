@@ -3,6 +3,7 @@ package hu.cubix.spring.hr.gaborh.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,7 +12,8 @@ import hu.cubix.spring.hr.gaborh.model.Company;
 
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 	
-	@Query("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.employees")
+	@EntityGraph(attributePaths = {"employees", "companyForm", "employees.job"})
+	@Query("SELECT c FROM Company c")
 	public List<Company> findAllWithEmployees();
 	
 	@Query("SELECT DISTINCT c FROM Company c LEFT JOIN FETCH c.employees WHERE c.id = :cId")
