@@ -27,7 +27,6 @@ import hu.cubix.spring.hr.gaborh.model.Qualification;
 import hu.cubix.spring.hr.gaborh.repository.CompanyFormRepository;
 import hu.cubix.spring.hr.gaborh.repository.CompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.EmployeeRepository;
-import hu.cubix.spring.hr.gaborh.repository.ManagerByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.PositionDetailsByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.PositionRepository;
 import hu.cubix.spring.hr.gaborh.repository.TimeOffRequestRepository;
@@ -66,10 +65,7 @@ public class HrCompanyRestControllerIT {
 
 	@Autowired
 	PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
-	
-	@Autowired
-	ManagerByCompanyRepository managerByCompanyRepository;
-	
+
 	@Autowired
 	TimeOffRequestRepository timeOffRequestRepository;
 
@@ -79,7 +75,6 @@ public class HrCompanyRestControllerIT {
 
 	@BeforeEach
 	public void init() {
-		managerByCompanyRepository.deleteAllInBatch();
 		timeOffRequestRepository.deleteAllInBatch();
 		employeeRepository.deleteAllInBatch();
 		positionDetailsByCompanyRepository.deleteAllInBatch();
@@ -102,8 +97,9 @@ public class HrCompanyRestControllerIT {
 				LocalDateTime.of(1990, 01, 12, 8, 00));
 
 		// ACT
-		webTestClient.post().uri(API_COMPANIES + "/" + savedCompany.getId() + "/employees").bodyValue(testEmployee)
-				.exchange().expectStatus().isOk();
+		webTestClient.post().uri(API_COMPANIES + "/" + savedCompany.getId() + "/employees")
+				.header("X-CSRF-TOKEN", "my-secret").cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret"))
+				.bodyValue(testEmployee).exchange().expectStatus().isOk();
 
 		List<Employee> employeesAfter = companyService.findByIdWithEmployees(savedCompany.getId()).getEmployees();
 		Employee addedEmployee = employeesAfter.get(employeesBefore.size());
@@ -127,8 +123,9 @@ public class HrCompanyRestControllerIT {
 		EmployeeDto testEmployee = new EmployeeDto("test name", positionDto, 10000,
 				LocalDateTime.of(1990, 01, 12, 8, 00));
 
-		webTestClient.post().uri(API_COMPANIES + "/" + savedCompany.getId() + "/employees").bodyValue(testEmployee)
-				.exchange().expectStatus().isOk();
+		webTestClient.post().uri(API_COMPANIES + "/" + savedCompany.getId() + "/employees")
+				.header("X-CSRF-TOKEN", "my-secret").cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret"))
+				.bodyValue(testEmployee).exchange().expectStatus().isOk();
 
 		List<Employee> employeesAfterAddOne = companyService.findByIdWithEmployees(savedCompany.getId()).getEmployees();
 
@@ -136,6 +133,7 @@ public class HrCompanyRestControllerIT {
 
 		// ACT
 		webTestClient.delete().uri(API_COMPANIES + "/" + savedCompany.getId() + "/employees/" + addedEmployee.getId())
+				.header("X-CSRF-TOKEN", "my-secret").cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret"))
 				.exchange().expectStatus().isOk();
 
 		List<Employee> employeesAfterDelete = companyService.findByIdWithEmployees(savedCompany.getId()).getEmployees();
@@ -152,20 +150,21 @@ public class HrCompanyRestControllerIT {
 		// ARRANGE
 
 		Position savedPosition = positionRepository.save(positionMapper.dtoToPosition(positionDto));
-		Employee savedEmployee1 = employeeService.create(
-				new Employee("test name1", savedPosition, 10000, LocalDateTime.of(1990, 01, 12, 8, 00), savedCompany));
-		Employee savedEmployee2 = employeeService.create(
-				new Employee("test name2", savedPosition, 20000, LocalDateTime.of(1995, 01, 12, 8, 00), savedCompany));
+		Employee savedEmployee1 = employeeService.save(new Employee("test name1", savedPosition, 10000,
+				LocalDateTime.of(1990, 01, 12, 8, 00), savedCompany, null));
+		Employee savedEmployee2 = employeeService.save(new Employee("test name2", savedPosition, 20000,
+				LocalDateTime.of(1995, 01, 12, 8, 00), savedCompany, null));
 
 		List<Employee> employeesBefore = companyService.findByIdWithEmployees(savedCompany.getId()).getEmployees();
 
 		List<Employee> testEmployeesList = Arrays.asList(
-				new Employee("Ms Jane Doe", savedPosition, 40000, LocalDateTime.now().minusYears(13), null),
-				new Employee("Mr Jack Litle", savedPosition, 30000, LocalDateTime.now().minusYears(5), null),
-				new Employee("Adam Doe", savedPosition, 30000, LocalDateTime.now().minusYears(2), null));
+				new Employee("Ms Jane Doe", savedPosition, 40000, LocalDateTime.now().minusYears(13), null, null),
+				new Employee("Mr Jack Litle", savedPosition, 30000, LocalDateTime.now().minusYears(5), null, null),
+				new Employee("Adam Doe", savedPosition, 30000, LocalDateTime.now().minusYears(2), null, null));
 
 		// ACT
 		webTestClient.put().uri(API_COMPANIES + "/" + savedCompany.getId() + "/employees").bodyValue(testEmployeesList)
+				.header("X-CSRF-TOKEN", "my-secret").cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret"))
 				.exchange().expectStatus().isOk();
 
 		List<Employee> employeesAfter = companyService.findByIdWithEmployees(savedCompany.getId()).getEmployees();
@@ -181,7 +180,7 @@ public class HrCompanyRestControllerIT {
 			assertThat(employeesAfter.get(i).getJob()).isEqualTo(testEmployeesList.get(i).getJob());
 			assertThat(employeesAfter.get(i).getSalary()).isEqualTo(testEmployeesList.get(i).getSalary());
 			assertThat(employeesAfter.get(i).getStartDate()).isCloseTo(testEmployeesList.get(i).getStartDate(),
-					within(1, ChronoUnit.MICROS));			
+					within(1, ChronoUnit.MICROS));
 		}
 	}
 }

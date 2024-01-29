@@ -8,7 +8,6 @@ import hu.cubix.spring.hr.gaborh.model.Employee_;
 import hu.cubix.spring.hr.gaborh.model.TimeOffRequest;
 import hu.cubix.spring.hr.gaborh.model.TimeOffRequestStatus;
 import hu.cubix.spring.hr.gaborh.model.TimeOffRequest_;
-import jakarta.persistence.criteria.Expression;
 
 public class TimeOffRequestSpecifications {
 

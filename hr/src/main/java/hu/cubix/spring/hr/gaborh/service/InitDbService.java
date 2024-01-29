@@ -13,7 +13,6 @@ import hu.cubix.spring.hr.gaborh.model.PositionDetailsByCompany;
 import hu.cubix.spring.hr.gaborh.repository.CompanyFormRepository;
 import hu.cubix.spring.hr.gaborh.repository.CompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.EmployeeRepository;
-import hu.cubix.spring.hr.gaborh.repository.ManagerByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.PositionDetailsByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.PositionRepository;
 import hu.cubix.spring.hr.gaborh.repository.TimeOffRequestRepository;
@@ -38,14 +37,10 @@ public class InitDbService {
 	PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
 
 	@Autowired
-	ManagerByCompanyRepository managerByCompanyRepository;
-	
-	@Autowired
 	TimeOffRequestRepository timeOffRequestRepository;
 
 	@Transactional
 	public void clearDB() {
-		managerByCompanyRepository.deleteAllInBatch();
 		timeOffRequestRepository.deleteAllInBatch();
 		employeeRepository.deleteAllInBatch();
 		positionDetailsByCompanyRepository.deleteAllInBatch();
@@ -54,14 +49,14 @@ public class InitDbService {
 		positionRepository.deleteAllInBatch();
 	}
 
-	public List<Employee> insertTestData(List<Position> positions, List<CompanyForm> companyForms,
-			List<Company> companies, List<Employee> employees, List<PositionDetailsByCompany> testPDBCList) {
+	public List<Employee> insertTestData(List<Position> positions, List<CompanyForm> companyForms, List<Company> companies,
+			List<Employee> employees, List<PositionDetailsByCompany> testPDBCList) {
 		positionRepository.saveAll(positions);
 		companyFormRepository.saveAll(companyForms);
 		companyRepository.saveAll(companies);
-		List<Employee> savedEmployees = employeeRepository.saveAll(employees);
+		List<Employee> savedEmployeeList = employeeRepository.saveAll(employees);
 		positionDetailsByCompanyRepository.saveAll(testPDBCList);
-
-		return savedEmployees;
+		
+		return savedEmployeeList;
 	}
 }

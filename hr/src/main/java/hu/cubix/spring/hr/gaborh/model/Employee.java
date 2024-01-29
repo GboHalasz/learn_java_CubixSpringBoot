@@ -14,21 +14,24 @@ public class Employee {
 
 	@Id
 	@GeneratedValue
-	private long id;
-	
+	private Long id;
+
 	private String name;
 
 	@ManyToOne
 	@JoinColumn(name = "position_id")
 	private Position job;
-	
+
 	private Integer salary;
 	private LocalDateTime startDate;
 
 	@ManyToOne
 	@JoinColumn(name = "company_id")
 	private Company company;
-	
+
+	@ManyToOne
+	private Employee manager;
+
 	private String username;
 	private String password;
 
@@ -36,14 +39,15 @@ public class Employee {
 
 	}
 
-	public Employee(String name, Position job, Integer salary,
-			LocalDateTime startDate, Company company) {
+	public Employee(String name, Position job, Integer salary, LocalDateTime startDate, Company company,
+			Employee manager) {
 		super();
 		this.name = name;
 		this.job = job;
 		this.salary = salary;
 		this.startDate = startDate;
-		this.company = company;		
+		this.company = company;
+		this.manager = manager;
 	}
 
 	public String getName() {
@@ -58,11 +62,11 @@ public class Employee {
 		return job;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -92,6 +96,14 @@ public class Employee {
 
 	public void setCompany(Company company) {
 		this.company = company;
+	}
+
+	public Employee getManager() {
+		return manager;
+	}
+
+	public void setManager(Employee manager) {
+		this.manager = manager;
 	}
 
 	public String getUsername() {
@@ -130,7 +142,8 @@ public class Employee {
 	@Override
 	public String toString() {
 		return "Employee [id=" + id + ", name=" + name + ", job=" + job + ", salary=" + salary + ", startDate="
-				+ startDate + ", company=" + company + "]";
+				+ startDate + ", company=" + company + ", manager=" + manager + ", username=" + username + ", password="
+				+ password + "]";
 	}
 	
 }

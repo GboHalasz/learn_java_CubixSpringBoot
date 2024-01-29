@@ -13,12 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import hu.cubix.spring.hr.gaborh.model.Company;
 import hu.cubix.spring.hr.gaborh.model.CompanyForm;
 import hu.cubix.spring.hr.gaborh.model.Employee;
-import hu.cubix.spring.hr.gaborh.model.ManagerByCompany;
 import hu.cubix.spring.hr.gaborh.model.Position;
 import hu.cubix.spring.hr.gaborh.model.PositionDetailsByCompany;
 import hu.cubix.spring.hr.gaborh.model.Qualification;
-import hu.cubix.spring.hr.gaborh.repository.ManagerByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.service.CompanyService;
+import hu.cubix.spring.hr.gaborh.service.EmployeeService;
 import hu.cubix.spring.hr.gaborh.service.InitDbService;
 import hu.cubix.spring.hr.gaborh.service.SalaryService;
 
@@ -35,8 +34,8 @@ public class HrApplication implements CommandLineRunner {
 	CompanyService companyService;
 
 	@Autowired
-	ManagerByCompanyRepository managerByCompanyRepository;
-	
+	EmployeeService employeeService;
+
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
@@ -62,23 +61,23 @@ public class HrApplication implements CommandLineRunner {
 
 		List<Employee> testEmployeeList = Arrays.asList(
 				new Employee("Boss Doe", positions.get(0), 40000, LocalDateTime.now().minusYears(13),
-						testCompanyList.get(0)),				
+						testCompanyList.get(0), null),
 				new Employee("Junior Litle", positions.get(1), 30000, LocalDateTime.now().minusYears(5),
-						testCompanyList.get(0)),
+						testCompanyList.get(0), null),
 				new Employee("Adam Doe", positions.get(2), 30000, LocalDateTime.now().minusYears(2),
-						testCompanyList.get(3)),
+						testCompanyList.get(3), null),
 				new Employee("Little Joe", positions.get(0), 25000, LocalDateTime.now().minusYears(2),
-						testCompanyList.get(3)),
+						testCompanyList.get(3), null),
 				new Employee("Mrs Lil Doe", positions.get(3), 40000, LocalDateTime.now().minusMonths(30),
-						testCompanyList.get(0)),
+						testCompanyList.get(0), null),
 				new Employee("Mr. Peter Sramek", positions.get(2), 35000, LocalDateTime.now().minusMonths(30),
-						testCompanyList.get(0)));
+						testCompanyList.get(0), null));
 
 		testEmployeeList.get(0).setUsername("user1");
 		testEmployeeList.get(0).setPassword(passwordEncoder.encode("pass"));
 		testEmployeeList.get(1).setUsername("user2");
 		testEmployeeList.get(1).setPassword(passwordEncoder.encode("pass"));
-		
+
 		PositionDetailsByCompany pd = new PositionDetailsByCompany();
 		pd.setCompany(testCompanyList.get(0));
 		pd.setMinSalary(25000);
@@ -104,8 +103,10 @@ public class HrApplication implements CommandLineRunner {
 		initDbService.clearDB();
 		List<Employee> savedEmployees = initDbService.insertTestData(positions, companyForms, testCompanyList,
 				testEmployeeList, testPositionDetalisByCompanyList);
-		managerByCompanyRepository.save(new ManagerByCompany(savedEmployees.get(0),
-				savedEmployees.get(0).getCompany()));		
+		savedEmployees.get(1).setManager(savedEmployees.get(0));
+		savedEmployees.get(0).setManager(savedEmployees.get(2));
+		employeeService.update(savedEmployees.get(1));
+		employeeService.update(savedEmployees.get(0));
 	}
 
 }

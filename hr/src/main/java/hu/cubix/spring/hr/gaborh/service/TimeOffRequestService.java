@@ -22,10 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import hu.cubix.spring.hr.gaborh.dto.TimeOffRequestSearchDto;
-import hu.cubix.spring.hr.gaborh.model.Employee;
 import hu.cubix.spring.hr.gaborh.model.TimeOffRequest;
 import hu.cubix.spring.hr.gaborh.model.TimeOffRequestStatus;
-import hu.cubix.spring.hr.gaborh.repository.ManagerByCompanyRepository;
 import hu.cubix.spring.hr.gaborh.repository.TimeOffRequestRepository;
 import hu.cubix.spring.hr.gaborh.security.HrUser;
 import jakarta.transaction.Transactional;
@@ -37,9 +35,6 @@ public class TimeOffRequestService {
 	TimeOffRequestRepository timeOffRequestRepository;
 
 	@Autowired
-	ManagerByCompanyRepository managerByCompanyRepository;
-
-	@Autowired
 	EmployeeService employeeService;
 
 	@Transactional
@@ -49,9 +44,9 @@ public class TimeOffRequestService {
 			return null;
 		}
 
-		Employee currentUser = getCurrentHrUser().getEmployee();
+		Long currentUserId = getCurrentHrUser().getId();
 
-		timeOffRequest.setSubmitter(currentUser);
+		timeOffRequest.setSubmitter(employeeService.findById(currentUserId).get());
 		timeOffRequest.setApprover(null);
 		timeOffRequest.setStatus(TimeOffRequestStatus.NOT_JUDGED);
 
@@ -61,18 +56,18 @@ public class TimeOffRequestService {
 	@Transactional
 	public TimeOffRequest update(TimeOffRequest timeOffRequest) {
 		TimeOffRequest storedRequest = findById(timeOffRequest.getId()).orElseThrow(() -> new NoSuchElementException());
-		Employee currentUser = getCurrentHrUser().getEmployee();
-
-		if (storedRequest.getSubmitter().getId() != currentUser.getId()) {
+		Long currentUserId = getCurrentHrUser().getId();
+		
+		if (!storedRequest.getSubmitter().getId().equals(currentUserId)) {
 			throw new AccessDeniedException("You can only update your own requests!");
 		}
-
+		
 		if (storedRequest.getStatus() != TimeOffRequestStatus.NOT_JUDGED)
 			throw new AccessDeniedException("You can't update assessed requests!");
-
+		
 		storedRequest.setStartDate(timeOffRequest.getStartDate());
 		storedRequest.setEndDate(timeOffRequest.getEndDate());
-
+		
 		return storedRequest;
 	}
 
@@ -147,32 +142,29 @@ public class TimeOffRequestService {
 	@Transactional
 	public TimeOffRequest approve(long id) {
 		TimeOffRequest request = findById(id).orElseThrow(() -> new NoSuchElementException());
-		Employee currentUser = getCurrentHrUser().getEmployee();
-		Employee managerOfSubmitter = managerByCompanyRepository.findByCompany(request.getSubmitter().getCompany())
-				.get(0).getManager();
-		if (managerOfSubmitter != null && managerOfSubmitter.getId() != (currentUser.getId())) {
+		Long currentUserId = getCurrentHrUser().getId();
+
+		if (!request.getSubmitter().getManager().getId().equals(currentUserId)) {
 			throw new AccessDeniedException(
 					"Trying to approve holiday request where the employee's manager is not the current user");
 		}
 
 		request.setStatus(TimeOffRequestStatus.APPROVED);
-		request.setApprover(currentUser);
+		request.setApprover(employeeService.findById(currentUserId).get());
 		return request;
 	}
 
 	@Transactional
 	public TimeOffRequest reject(long id) {
 		TimeOffRequest request = findById(id).orElseThrow(() -> new NoSuchElementException());
-		Employee currentUser = getCurrentHrUser().getEmployee();
-		Employee managerOfSubmitter = managerByCompanyRepository.findByCompany(request.getSubmitter().getCompany())
-				.get(0).getManager();
-		if (managerOfSubmitter != null && managerOfSubmitter.getId() != (currentUser.getId())) {
+		Long currentUserId = getCurrentHrUser().getId();
+		if (!request.getSubmitter().getManager().getId().equals(currentUserId)) {
 			throw new AccessDeniedException(
 					"Trying to approve holiday request where the employee's manager is not the current user");
 		}
 
 		request.setStatus(TimeOffRequestStatus.REJECTED);
-		request.setApprover(currentUser);
+		request.setApprover(employeeService.findById(currentUserId).get());
 		return request;
 	}
 

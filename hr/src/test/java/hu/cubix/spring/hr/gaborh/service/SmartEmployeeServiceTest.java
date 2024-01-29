@@ -23,14 +23,14 @@ class SmartEmployeeServiceTest {
 		// given
 
 		Position developer = new Position("software developer", Qualification.NONE);
-		Employee employee13 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(13), null);
-		Employee employee10 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(10), null);
-		Employee employee7 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(7), null);
-		Employee employee5 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(5), null);
-		Employee employee3 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(3), null);
-		Employee employee2_5 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusMonths(30), null);
-		Employee employee2 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(2), null);
-		Employee employee1 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(1), null);
+		Employee employee13 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(13), null, null);
+		Employee employee10 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(10), null, null);
+		Employee employee7 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(7), null, null);
+		Employee employee5 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(5), null, null);
+		Employee employee3 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(3), null, null);
+		Employee employee2_5 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusMonths(30), null, null);
+		Employee employee2 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(2), null, null);
+		Employee employee1 = new Employee("Jane Doe", developer, 100, LocalDateTime.now().minusYears(1), null, null);
 
 		// when
 		// SalaryService salaryService = new SalaryService(new SmartEmployeeService());

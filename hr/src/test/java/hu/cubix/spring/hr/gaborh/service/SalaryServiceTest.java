@@ -25,7 +25,7 @@ class SalaryServiceTest {
 		//given
 		
 		Position developer = new Position("software developer", Qualification.NONE);
-		Employee employee = new Employee("Jane Doe", developer, 100, LocalDateTime.of(1990, 01, 12, 8, 00), null);			
+		Employee employee = new Employee("Jane Doe", developer, 100, LocalDateTime.of(1990, 01, 12, 8, 00), null, null);			
 		SalaryService salaryService = new SalaryService(new MockEmployeeServiceClass());
 		//when
 		

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class HrConfigurationProperties {
 
 	private Raise raise = new Raise();
+	private JWTConf jwtConf = new JWTConf();
 
 	public Raise getRaise() {
 		return raise;
@@ -19,11 +20,59 @@ public class HrConfigurationProperties {
 		this.raise = raise;
 	}
 
+	public JWTConf getJwtConf() {
+		return jwtConf;
+	}
+
+	public void setJwtConf(JWTConf jwtConf) {
+		this.jwtConf = jwtConf;
+	}
+
+	public static class JWTConf {
+
+		private String secret;
+		private long expiryMinutes;
+		private String issuer;
+		private String algorithm;
+
+		public String getSecret() {
+			return secret;
+		}
+
+		public void setSecret(String secret) {
+			this.secret = secret;
+		}
+
+		public long getExpiryMinutes() {
+			return expiryMinutes;
+		}
+
+		public void setExpiryMinutes(long expiryMinutes) {
+			this.expiryMinutes = expiryMinutes;
+		}
+
+		public String getIssuer() {
+			return issuer;
+		}
+
+		public void setIssuer(String issuer) {
+			this.issuer = issuer;
+		}
+
+		public String getAlgorithm() {
+			return algorithm;
+		}
+
+		public void setAlgorithm(String algorithm) {
+			this.algorithm = algorithm;
+		}
+
+	}
+
 	public static class Raise {
 
 		private Default def = new Default();
 		private Smart smart = new Smart();
-		
 
 		public Default getDef() {
 			return def;
@@ -32,7 +81,7 @@ public class HrConfigurationProperties {
 		public void setDef(Default def) {
 			this.def = def;
 		}
-		
+
 		public Smart getSmart() {
 			return smart;
 		}
@@ -52,7 +101,7 @@ public class HrConfigurationProperties {
 				this.percent = percent;
 			}
 		}
-		
+
 		public static class Smart {
 
 			private TreeMap<Long, Integer> limits;

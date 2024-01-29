@@ -41,8 +41,8 @@ public class HrEmployeesRestControllerIT {
 		}
 
 		PositionDto developer = new PositionDto("software developer", Qualification.NONE);
-		newEmployee = new EmployeeDto(newId, "test name", developer, 10000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
-		updatedEmployee = new EmployeeDto(newId, "test name2", developer, 20000, LocalDateTime.of(2000, 01, 12, 8, 00), null);
+		newEmployee = new EmployeeDto(newId, "test name", developer, 10000, LocalDateTime.of(1990, 01, 12, 8, 00));
+		updatedEmployee = new EmployeeDto(newId, "test name2", developer, 20000, LocalDateTime.of(2000, 01, 12, 8, 00));
 	}
 
 	@Test
@@ -52,13 +52,10 @@ public class HrEmployeesRestControllerIT {
 		List<EmployeeDto> employeesAfter = getAllEmployees();
 
 		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
-		assertThat(employeesAfter.subList(0, employeesBefore.size()))
-			.usingRecursiveFieldByFieldElementComparator()
-			.containsExactlyElementsOf(employeesBefore);
-		assertThat(employeesAfter.get(employeesAfter.size() - 1))
-			.usingRecursiveComparison()
-			.ignoringFields("id", "job.id")
-			.isEqualTo(newEmployee);
+		assertThat(employeesAfter.subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator()
+				.containsExactlyElementsOf(employeesBefore);
+		assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison()
+				.ignoringFields("id", "job.id").isEqualTo(newEmployee);
 	}
 
 	@Test
@@ -133,10 +130,8 @@ public class HrEmployeesRestControllerIT {
 		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
 		assertThat(employeesAfter.subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyElementsOf(employeesBefore);
-		assertThat(employeesAfter.get(employeesAfter.size() - 1))
-			.usingRecursiveComparison()
-			.ignoringFields("job.id")
-			.isEqualTo(updatedEmployee);
+		assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().ignoringFields("job.id")
+				.isEqualTo(updatedEmployee);
 	}
 
 	@Test
@@ -215,32 +210,37 @@ public class HrEmployeesRestControllerIT {
 		assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size() + 1);
 		assertThat(employeesAfter.subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator()
 				.containsExactlyElementsOf(employeesBefore);
-		assertThat(employeesAfter.get(employeesAfter.size() - 1))
-			.usingRecursiveComparison()
-			.ignoringFields("job.id")
-			.isEqualTo(newEmployee);
+		assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().ignoringFields("job.id")
+				.isEqualTo(newEmployee);
 	}
 
 	private void updateEmployeeWithValid(EmployeeDto employeeDto) {
-		webTestClient.put().uri(API_EMPLOYEES + '/' + employeeDto.getId()).bodyValue(employeeDto).exchange()
+		webTestClient.put().uri(API_EMPLOYEES + '/' + employeeDto.getId()).header("X-CSRF-TOKEN", "my-secret")
+				.cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret")).bodyValue(employeeDto).exchange()
 				.expectStatus().isOk();
 	}
 
 	private void updateEmployeeWithInvalid(EmployeeDto employeeDto) {
-		webTestClient.put().uri(API_EMPLOYEES + '/' + employeeDto.getId()).bodyValue(employeeDto).exchange()
+		webTestClient.put().uri(API_EMPLOYEES + '/' + employeeDto.getId()).header("X-CSRF-TOKEN", "my-secret")
+				.cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret")).bodyValue(employeeDto).exchange()
 				.expectStatus().isBadRequest();
 	}
 
 	private void createValid(EmployeeDto newEmployee) {
-		webTestClient.post().uri(API_EMPLOYEES).bodyValue(newEmployee).exchange().expectStatus().isOk();
+		webTestClient.post().uri(API_EMPLOYEES).header("X-CSRF-TOKEN", "my-secret")
+				.cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret")).bodyValue(newEmployee).exchange()
+				.expectStatus().isOk();
 	}
 
 	private void createInvalid(EmployeeDto newEmployee) {
-		webTestClient.post().uri(API_EMPLOYEES).bodyValue(newEmployee).exchange().expectStatus().isBadRequest();
+		webTestClient.post().uri(API_EMPLOYEES).header("X-CSRF-TOKEN", "my-secret")
+				.cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret")).bodyValue(newEmployee).exchange()
+				.expectStatus().isBadRequest();
 	}
 
 	private List<EmployeeDto> getAllEmployees() {
-		List<EmployeeDto> allEmployees = webTestClient.get().uri(API_EMPLOYEES).exchange().expectStatus().isOk()
+		List<EmployeeDto> allEmployees = webTestClient.get().uri(API_EMPLOYEES).header("X-CSRF-TOKEN", "my-secret")
+				.cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret")).exchange().expectStatus().isOk()
 				.expectBodyList(EmployeeDto.class).returnResult().getResponseBody();
 
 		Collections.sort(allEmployees, Comparator.comparing(e -> e.getId()));

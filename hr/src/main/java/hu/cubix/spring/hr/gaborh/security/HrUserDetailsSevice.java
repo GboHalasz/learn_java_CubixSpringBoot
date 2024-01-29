@@ -18,12 +18,17 @@ public class HrUserDetailsSevice implements UserDetailsService {
 	@Autowired
 	EmployeeRepository employeeRepository;
 
+	@Autowired
+	JwtService jwtService;
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
 		Employee employee = employeeRepository.findByUsername(username)
 				.orElseThrow(() -> new UsernameNotFoundException(username));
 
-		return new HrUser(username, employee.getPassword(), Arrays.asList(new SimpleGrantedAuthority("USER")), employee);
+		return new HrUser(username, employee.getPassword(), Arrays.asList(new SimpleGrantedAuthority("USER")),
+				employee.getName(), employee.getId(), jwtService.getManagedEmployeesOf(employee),
+				employee.getManager().getId(), employee.getManager().getUsername());
 	}
 }

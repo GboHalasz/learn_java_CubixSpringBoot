@@ -19,7 +19,7 @@ public interface EmployeeMapper {
 	@Mapping(target = "company", ignore = true)
 	@Named("summary")
 	Employee dtoToEmployee(EmployeeDto employeeDto);
-	
+
 	Employee dtoToEmployeeWithCompany(EmployeeDto employeeDto);
 
 	List<EmployeeDto> employeesToDtos(List<Employee> employees);

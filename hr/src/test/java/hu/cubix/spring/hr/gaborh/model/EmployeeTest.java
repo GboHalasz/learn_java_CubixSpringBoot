@@ -14,7 +14,7 @@ class EmployeeTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		Position developer = new Position("software developer", Qualification.NONE);
-		employeeUnderTest = new Employee("Jane Doe", developer, 20000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
+		employeeUnderTest = new Employee("Jane Doe", developer, 20000, LocalDateTime.of(1990, 01, 12, 8, 00), null, null);
 	}
 
 	@Test

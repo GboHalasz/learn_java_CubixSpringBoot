@@ -38,8 +38,8 @@ public abstract class EmployeeSuperService implements EmployeeService {
 	@Override
 	@Transactional
 	public Employee create(Employee employee) {
-		if (employeeRepository.existsById(employee.getId()))
-			return null;
+//		if (employeeRepository.existsById(employee.getId()))
+//			return null;
 		return save(employee);
 	}
 

@@ -45,7 +45,7 @@ class EmployeeServiceTest {
 	void getPayRaisePercentMethodShouldReturnsWhatPercentagePayRaiseShouldTheGivenEmployeeGet() {
 		//given
 		Position developer = new Position("software developer", Qualification.NONE);
-		Employee employee = new Employee("Jane Doe", developer, 20000, LocalDateTime.of(1990, 01, 12, 8, 00), null);
+		Employee employee = new Employee("Jane Doe", developer, 20000, LocalDateTime.of(1990, 01, 12, 8, 00), null, null);
 		
 		//when
 		int percent = mockObject.getPayRaisePercent(employee);

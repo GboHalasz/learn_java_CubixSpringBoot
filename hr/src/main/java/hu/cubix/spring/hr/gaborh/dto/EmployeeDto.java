@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Positive;
 
 public class EmployeeDto {
 
-	private long id;
+	private Long id;
 	@NotEmpty
 	private String name;
 	@NotNull
@@ -19,8 +19,8 @@ public class EmployeeDto {
 	@Past
 	private LocalDateTime startDate;
 
-	private CompanyDto company;
-	
+	private CompanyDto company;	
+
 	private String username;
 	private String password;
 
@@ -28,7 +28,8 @@ public class EmployeeDto {
 
 	}
 
-	public EmployeeDto(String name, PositionDto job, Integer salary, LocalDateTime startDate) {
+	public EmployeeDto(@NotEmpty String name, @NotNull PositionDto job, @Positive Integer salary,
+			@Past LocalDateTime startDate) {
 		super();
 		this.name = name;
 		this.job = job;
@@ -36,8 +37,8 @@ public class EmployeeDto {
 		this.startDate = startDate;		
 	}
 
-	public EmployeeDto(long id, String name, PositionDto job, Integer salary, LocalDateTime startDate,
-			EmployeeDto manager) {
+	public EmployeeDto(Long id, @NotEmpty String name, @NotNull PositionDto job, @Positive Integer salary,
+			@Past LocalDateTime startDate) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -50,11 +51,11 @@ public class EmployeeDto {
 		return job;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
