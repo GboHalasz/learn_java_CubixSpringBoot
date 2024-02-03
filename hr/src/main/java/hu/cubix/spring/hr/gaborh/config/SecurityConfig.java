@@ -41,8 +41,9 @@ public class SecurityConfig {
 				.addFilterBefore(new StatelessCSRFFilter(), CsrfFilter.class)
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-						.requestMatchers("/api/timeoffs/**").authenticated()
-						.anyRequest().permitAll())
+						.requestMatchers("/error").permitAll()						//Ha az api valahol /error-ra fut, azt külön engedélyezzük, hogy a hibaoldalak authentikáció nélkül is elérhetőek legyenek
+						.requestMatchers("/api/timeoffs/**").authenticated()			
+						.anyRequest().permitAll())									//itt igazából minden utat le kellene zárnunk authenticated-del. 
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
 	}
 

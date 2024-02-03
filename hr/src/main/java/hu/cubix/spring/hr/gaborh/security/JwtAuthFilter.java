@@ -3,6 +3,7 @@ package hu.cubix.spring.hr.gaborh.security;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,8 +56,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				response.setStatus(HttpStatus.FORBIDDEN.value());
+				return;	
 			}
 			
 			

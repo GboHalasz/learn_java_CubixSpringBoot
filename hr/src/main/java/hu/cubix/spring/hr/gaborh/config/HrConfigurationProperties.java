@@ -1,5 +1,6 @@
 package hu.cubix.spring.hr.gaborh.config;
 
+import java.time.Duration;
 import java.util.TreeMap;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,7 +32,7 @@ public class HrConfigurationProperties {
 	public static class JWTConf {
 
 		private String secret;
-		private long expiryMinutes;
+		private Duration expiryMinutes;
 		private String issuer;
 		private String algorithm;
 
@@ -43,11 +44,11 @@ public class HrConfigurationProperties {
 			this.secret = secret;
 		}
 
-		public long getExpiryMinutes() {
+		public Duration getExpiryMinutes() {
 			return expiryMinutes;
 		}
 
-		public void setExpiryMinutes(long expiryMinutes) {
+		public void setExpiryMinutes(Duration expiryMinutes) {
 			this.expiryMinutes = expiryMinutes;
 		}
 

@@ -1,6 +1,7 @@
 package hu.cubix.spring.hr.gaborh.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
@@ -8,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Employee {
@@ -31,6 +33,9 @@ public class Employee {
 
 	@ManyToOne
 	private Employee manager;
+
+	@OneToMany(mappedBy = "manager")
+	private List<Employee> managedEmployees;
 
 	private String username;
 	private String password;
@@ -122,6 +127,14 @@ public class Employee {
 		this.password = password;
 	}
 
+	public List<Employee> getManagedEmployees() {
+		return managedEmployees;
+	}
+
+	public void setManagedEmployees(List<Employee> managedEmployees) {
+		this.managedEmployees = managedEmployees;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -145,5 +158,5 @@ public class Employee {
 				+ startDate + ", company=" + company + ", manager=" + manager + ", username=" + username + ", password="
 				+ password + "]";
 	}
-	
+
 }

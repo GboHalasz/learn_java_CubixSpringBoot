@@ -102,7 +102,7 @@ public class HrTimeOffRequestsRestController {
 	public void delete(@PathVariable long id) {
 		TimeOffRequest timeOffRequestEntity = findByIdOrThrow(id);
 		
-		if (!timeOffRequestEntity.getSubmitter().getId().equals(getCurrentHrUser().getId())) {
+		if (!timeOffRequestEntity.getSubmitter().getId().equals(getCurrentHrUser().getEmployee().getId())) {
 			throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
 		}
 		

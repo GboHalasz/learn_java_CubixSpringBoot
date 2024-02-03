@@ -44,7 +44,7 @@ public class TimeOffRequestService {
 			return null;
 		}
 
-		Long currentUserId = getCurrentHrUser().getId();
+		Long currentUserId = getCurrentHrUser().getEmployee().getId();
 
 		timeOffRequest.setSubmitter(employeeService.findById(currentUserId).get());
 		timeOffRequest.setApprover(null);
@@ -56,7 +56,7 @@ public class TimeOffRequestService {
 	@Transactional
 	public TimeOffRequest update(TimeOffRequest timeOffRequest) {
 		TimeOffRequest storedRequest = findById(timeOffRequest.getId()).orElseThrow(() -> new NoSuchElementException());
-		Long currentUserId = getCurrentHrUser().getId();
+		Long currentUserId = getCurrentHrUser().getEmployee().getId();
 		
 		if (!storedRequest.getSubmitter().getId().equals(currentUserId)) {
 			throw new AccessDeniedException("You can only update your own requests!");
@@ -142,7 +142,7 @@ public class TimeOffRequestService {
 	@Transactional
 	public TimeOffRequest approve(long id) {
 		TimeOffRequest request = findById(id).orElseThrow(() -> new NoSuchElementException());
-		Long currentUserId = getCurrentHrUser().getId();
+		Long currentUserId = getCurrentHrUser().getEmployee().getId();
 
 		if (!request.getSubmitter().getManager().getId().equals(currentUserId)) {
 			throw new AccessDeniedException(
@@ -157,7 +157,7 @@ public class TimeOffRequestService {
 	@Transactional
 	public TimeOffRequest reject(long id) {
 		TimeOffRequest request = findById(id).orElseThrow(() -> new NoSuchElementException());
-		Long currentUserId = getCurrentHrUser().getId();
+		Long currentUserId = getCurrentHrUser().getEmployee().getId();
 		if (!request.getSubmitter().getManager().getId().equals(currentUserId)) {
 			throw new AccessDeniedException(
 					"Trying to approve holiday request where the employee's manager is not the current user");

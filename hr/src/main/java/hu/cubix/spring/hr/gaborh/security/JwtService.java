@@ -1,12 +1,12 @@
 package hu.cubix.spring.hr.gaborh.security;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,84 +15,113 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import hu.cubix.spring.hr.gaborh.config.HrConfigurationProperties;
 import hu.cubix.spring.hr.gaborh.config.HrConfigurationProperties.JWTConf;
 import hu.cubix.spring.hr.gaborh.model.Employee;
-import hu.cubix.spring.hr.gaborh.repository.EmployeeRepository;
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class JwtService {
 
-	@Autowired
-	EmployeeRepository employeeRepository;
+	private static final String MANAGER = "manager";
+	private static final String MANAGED_EMPLOYEES = "managedEmployees";
+	private static final String USERNAME = "username";
+	private static final String FULL_NAME = "fullName";
+	private static final String ID = "id";
+	private Algorithm algorithm;
 
 	@Autowired
 	private HrConfigurationProperties config;
 
-//	private static final Algorithm algorithm = Algorithm.HMAC256("mysecret");
-	
-	public JwtService() throws Exception {
-		super();
+	@PostConstruct
+	public void init() {
+		JWTConf jwtConf = config.getJwtConf();
+		try {
+			Method algorithmMethod = Algorithm.class.getMethod(jwtConf.getAlgorithm(), String.class);
+			algorithm = (Algorithm) algorithmMethod.invoke(Algorithm.class, jwtConf.getSecret());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	public String createJwt(UserDetails userDetails) throws Exception {
-		JWTConf jwtConf = config.getJwtConf();
-		Method algorithmMethod = Algorithm.class.getMethod(jwtConf.getAlgorithm(), String.class);
-		Algorithm algorithm =(Algorithm) algorithmMethod.invoke(Algorithm.class, jwtConf.getSecret());	
-		
-		
-		Employee employee = employeeRepository.findByUsername(userDetails.getUsername()).get();
+//	private static final Algorithm algorithm = Algorithm.HMAC256("mysecret");
 
-		return JWT.create() // composes the token
-				.withSubject(userDetails.getUsername())
+	public String createJwt(UserDetails userDetails) throws Exception {
+
+		JWTConf jwtConf = config.getJwtConf();
+
+		Employee employee = ((HrUser) userDetails).getEmployee();
+
+		Builder jwtBuilder = JWT.create().withSubject(userDetails.getUsername())
 				.withArrayClaim("auth",
 						userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 								.toArray(String[]::new))
-				.withClaim("employeeName", employee.getName()).withClaim("employeeId", employee.getId())
-				.withClaim("managedEmployees", getManagedEmployeesOf(employee))
-				.withClaim("managerId", employee.getManager().getId())
-				.withClaim("managerUsername", employee.getManager().getUsername())
-				.withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(jwtConf.getExpiryMinutes()))) // generally we can
-																									// set 5 - 10
-																									// minutes, but here
-																									// I set 2
-																									// minutes for test
-																									// purposes
+				.withClaim(FULL_NAME, employee.getName()).withClaim(ID, employee.getId());
+
+		Employee manager = employee.getManager();
+		if (manager != null) {
+			jwtBuilder.withClaim(MANAGER, createMapFromEmployee(manager));
+		}
+
+		List<Employee> managedEmployees = employee.getManagedEmployees();
+		if (managedEmployees != null && !managedEmployees.isEmpty()) {
+			jwtBuilder.withClaim(MANAGED_EMPLOYEES,
+					managedEmployees.stream().map(this::createMapFromEmployee).toList());
+		}
+
+		return jwtBuilder
+				.withExpiresAt(
+						new Date(System.currentTimeMillis() + jwtConf.getExpiryMinutes().toMillis()))
 				.withIssuer(jwtConf.getIssuer()).sign(algorithm);
 	}
 
+	private Map<String, Object> createMapFromEmployee(Employee employee) {
+		return Map.of(ID, employee.getId(), USERNAME, employee.getUsername());
+	}
+
 	public UserDetails parseJwt(String jwtToken) throws Exception {
-		JWTConf jwtConf = config.getJwtConf();
-		Method algorithmMethod = Algorithm.class.getMethod(jwtConf.getAlgorithm(), String.class);
-		Algorithm algorithm =(Algorithm) algorithmMethod.invoke(Algorithm.class, jwtConf.getSecret());
-		
-		DecodedJWT decodedJwt = JWT.require(algorithm).withIssuer(jwtConf.getIssuer()).build().verify(jwtToken);
+
+		DecodedJWT decodedJwt = JWT.require(algorithm).withIssuer(config.getJwtConf().getIssuer()).build()
+				.verify(jwtToken);
+
+		Employee employee = new Employee();									//egy új inmemory Employeet hozunk létre a tokenből kinyert adatokból, majd ezzel az employee-val létrehozott új HrUser-rel térünk vissza.
+		employee.setId(decodedJwt.getClaim(ID).asLong());
+		employee.setUsername(decodedJwt.getSubject());
+		employee.setName(decodedJwt.getClaim(FULL_NAME).asString());
+
+		Claim managerClaim = decodedJwt.getClaim(MANAGER);					//a visszaadott Claim sosem null
+
+		Map<String, Object> managerData = managerClaim.asMap();				//de ez már lehet null
+		employee.setManager(parseEmployeeFromMap(managerData));				//ezért a parseEmployeeFromMap-ban ellenőrizzük, hogy null-e
+
+		Claim managedEmployeesClaim = decodedJwt.getClaim(MANAGED_EMPLOYEES);
+		employee.setManagedEmployees(new ArrayList<>());
+		List<HashMap> managedEmployeesMaps = managedEmployeesClaim.asList(HashMap.class);
+		if (managedEmployeesMaps != null) {
+			for (var employeeMap : managedEmployeesMaps) {
+				Employee managedEmployee = parseEmployeeFromMap(employeeMap);
+				if (managedEmployee != null)
+					employee.getManagedEmployees().add(managedEmployee);
+			}
+		}
 
 		return new HrUser(decodedJwt.getSubject(), "dummy",
 				decodedJwt.getClaim("auth").asList(String.class).stream().map(SimpleGrantedAuthority::new).toList(),
-				decodedJwt.getClaim("employeeName").asString(), decodedJwt.getClaim("employeeId").asLong(),
-				convertToMapStringLong(decodedJwt.getClaim("managedEmployees").asMap()),
-				decodedJwt.getClaim("managerId").asLong(), decodedJwt.getClaim("managerUsername").asString());
+				employee);
 	}
 
-	public Map<String, Long> getManagedEmployeesOf(Employee employee) {
-		List<Employee> managedEmployees = employeeRepository.findByManagerId(employee.getId());
-		Map<String, Long> managedEmployeesMap = new HashMap<String, Long>();
-		if (!managedEmployees.isEmpty()) {
-			for (Employee emp : managedEmployees) {
-
-				managedEmployeesMap.put(emp.getUsername(), emp.getId());
-			}
+	private Employee parseEmployeeFromMap(Map<String, Object> employeeMap) {
+		if (employeeMap != null) {
+			Employee employee = new Employee();
+			employee.setId(((Integer) employeeMap.get(ID)).longValue()); //hiába long volt amikor beletettük a Claim-be a Map-et, a könyvtár default sajátossága, hogy átalakítja integerré és kinyerésnél vissza kell alakítanunk long-gá
+			employee.setUsername((String) employeeMap.get(USERNAME));
 		}
-		return managedEmployeesMap;
-	}
 
-	private Map<String, Long> convertToMapStringLong(Map<String, Object> map) {
-		Map<String, Long> newMap = map.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> Long.valueOf(e.getValue().toString())));
-		return newMap;
+		return null;
 	}
 }

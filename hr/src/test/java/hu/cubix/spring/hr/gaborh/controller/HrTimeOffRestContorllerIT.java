@@ -106,7 +106,7 @@ public class HrTimeOffRestContorllerIT {
 		savedEmployee3 = employeeRepository.save(new Employee("Juno Name3", savedPosition, 10000,
 				LocalDateTime.of(2010, 01, 12, 8, 00), savedCompany, null));
 		savedEmployee1 = employeeRepository.save(new Employee("Boss name1", savedPosition, 10000,
-				LocalDateTime.of(1990, 01, 12, 8, 00), savedCompany, savedEmployee3));
+				LocalDateTime.of(1990, 01, 12, 8, 00), savedCompany, null));
 		savedEmployee2 = employeeRepository.save(new Employee("Junior Name2", savedPosition, 10000,
 				LocalDateTime.of(2015, 01, 12, 8, 00), savedCompany, savedEmployee1));
 
@@ -116,6 +116,7 @@ public class HrTimeOffRestContorllerIT {
 		savedEmployee2.setUsername("user2");
 		savedEmployee2.setPassword(passwordEncoder.encode("pass"));
 		employeeService.save(savedEmployee2);
+		
 		LoginDto testLogin = new LoginDto("user2", "pass");
 		jwt = webTestClient.post().uri("/api/login").header("X-CSRF-TOKEN", "my-secret")
 				.cookies(cookies -> cookies.add("CSRF-TOKEN", "my-secret")).bodyValue(testLogin).exchange()
