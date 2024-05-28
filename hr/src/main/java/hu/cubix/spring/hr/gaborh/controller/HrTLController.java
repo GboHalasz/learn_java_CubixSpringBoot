@@ -8,22 +8,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import hu.cubix.spring.hr.gaborh.model.Employee;
+import hu.cubix.spring.hr.gaborh.model.EmployeeTL;
 
 @Controller
 public class HrTLController {
 
-	private Map<Long, Employee> employees = new HashMap<>();
+	private Map<Long, EmployeeTL> employees = new HashMap<>();
 
 	@GetMapping("/employees")
 	public String home(Map<String, Object> model) {
 		model.put("employees", employees);
-		model.put("newEmployee", new Employee());
+		model.put("newEmployee", new EmployeeTL());
 		return "employees";
 	}
 
 	@PostMapping("/employees")
-	public String createEmployee(Employee employee) {
+	public String createEmployee(EmployeeTL employee) {
 		employees.put(employee.getId(), employee);
 		return "redirect:/employees";
 	}
@@ -36,7 +36,7 @@ public class HrTLController {
 	}
 
 	@PostMapping("/updateEmployee")
-	public String updateEmployee(Employee employee) {		
+	public String updateEmployee(EmployeeTL employee) {		
 		employees.put(employee.getId(), employee);
 //		for(int i=0; i< allEmployees.size(); i++) {											//ha allEmployees listánk lenne
 //			if(allEmployees.get(i).getEmployeeId() == employee.getEmployeeId()) {

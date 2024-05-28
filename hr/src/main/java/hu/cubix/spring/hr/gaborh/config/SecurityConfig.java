@@ -13,10 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CsrfFilter;
 
 import hu.cubix.spring.hr.gaborh.security.JwtAuthFilter;
-import hu.cubix.spring.hr.gaborh.security.StatelessCSRFFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -37,14 +35,15 @@ public class SecurityConfig {
 //				.httpBasic(
 //					Customizer.withDefaults()
 //				)
-				.csrf(csrf -> csrf.disable())
-				.addFilterBefore(new StatelessCSRFFilter(), CsrfFilter.class)
+//				.csrf(csrf -> csrf.disable())
+//				.addFilterBefore(new StatelessCSRFFilter(), CsrfFilter.class)
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.POST, "/api/login").permitAll()
 						.requestMatchers("/error").permitAll()						//Ha az api valahol /error-ra fut, azt külön engedélyezzük, hogy a hibaoldalak authentikáció nélkül is elérhetőek legyenek
 						.requestMatchers("/api/timeoffs/**").authenticated()			
 						.anyRequest().permitAll())									//itt igazából minden utat le kellene zárnunk authenticated-del. 
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+				.build();
 	}
 
 	@Bean
